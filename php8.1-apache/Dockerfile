@@ -1,6 +1,6 @@
 FROM php:8.1-apache
-ARG user
-ARG uid
+ARG user=king
+ARG uid=1000
 
 RUN apt-get update \
     && apt-get upgrade -y \
