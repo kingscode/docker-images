@@ -2,9 +2,6 @@ FROM php:8.1-fpm-alpine
 
 ARG user=king
 ARG uid=1000
-ARG development='false'
-
-ENV DEVELOPMENT_BUILD=${development}
 
 # Essentials
 RUN echo "UTC" > /etc/timezone
@@ -27,18 +24,17 @@ RUN apk update \
 RUN docker-php-ext-install zip mysqli pdo_mysql gmp pcntl mbstring exif
 
 # XDebug (if needed)
-RUN \
-     if [[ $development = 'true' ]] ;  \
-        then pecl install xdebug && docker-php-ext-enable xdebug; \
-     fi
+# RUN \
+#      if [[ $development = 'true' ]] ;  \
+#         then pecl install xdebug && docker-php-ext-enable xdebug; \
+#      fi
 
 # OPCache (if not development)
-COPY .docker/alpine/php8-fpm/opcache.ini /usr/local/etc/php/conf.d/
-RUN \
-     if [[ -z $development || $development != 'true' ]] ;  \
-        then \
-          docker-php-ext-install opcache && docker-php-ext-enable opcache; \
-     fi
+# RUN \
+#      if [[ -z $development || $development != 'true' ]] ;  \
+#         then \
+#           docker-php-ext-install opcache && docker-php-ext-enable opcache; \
+#      fi
 
 # BCMath extension is required for Google Cloud Tasks
 RUN docker-php-ext-install bcmath
@@ -68,7 +64,7 @@ WORKDIR /var/www/
 COPY --from=composer /usr/bin/composer /usr/bin/composer
 
 # Configure nginx
-COPY ./nginx/nginx-laravel.conf /etc/nginx/modules
+COPY ./nginx/nginx-laravel.conf /etc/nginx/sites-enabled
 
 RUN mkdir -p /run/nginx/
 RUN touch /run/nginx/nginx.pid
@@ -85,10 +81,11 @@ RUN sed -i "s/www-data/$user/g" /usr/local/etc/php-fpm.d/www.conf
 # Add user
 RUN addgroup -S $user && adduser -S $user -G $user -u $uid
 
-# In development, make /opt writable for PHPStorm (coverage)
-RUN if [[ $development == 'true' ]] ;  \
-    then chown $user:$user -Rf /opt && chmod -R 777 /opt; \
-    fi
+# Make /opt writable for PHPStorm (coverage)
+RUN chown $user:$user -Rf /opt && chmod -R 777 /opt
+
+# Prepare laravel directories for ownage
+RUN mkdir /var/www/storage /var/www/bootstrap
 
 # Apply ownage/permissions to user
 RUN chown $user:$user -Rf /var/www/storage /var/www/bootstrap /var/lib/nginx /run/nginx/nginx.pid /etc/nginx/modules
