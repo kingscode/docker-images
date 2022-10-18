@@ -79,7 +79,7 @@ RUN ln -sf /dev/stderr /var/log/nginx/error.log
 RUN nginx -t
 
 # Configure PHP-FPM
-COPY .docker/alpine/php8-fpm/www.conf /usr/local/etc/php-fpm.d/www.conf
+COPY ./php8.1-fpm/www.conf /usr/local/etc/php-fpm.d/www.conf
 RUN sed -i "s/www-data/$user/g" /usr/local/etc/php-fpm.d/www.conf
 
 # Add user
