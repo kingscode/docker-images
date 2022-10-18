@@ -25,6 +25,6 @@ jobs:
         name: Build and push
         uses: docker/build-push-action@v3
         with:
-          context: php8.1-nginx-alpine
+          context: ./php8.1-nginx-alpine
           push: true
           tags: thekingscode/php8.1-nginx-alpine:latest
