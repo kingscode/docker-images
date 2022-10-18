@@ -1,6 +1,4 @@
 FROM php:8.1-apache
-ARG user=king
-ARG uid=1000
 
 RUN apt-get update \
     && apt-get upgrade -y \
@@ -34,24 +32,12 @@ ENV APACHE_DOCUMENT_ROOT /var/www/public
 # Install composer from image. You may change it to the latest
 COPY --from=composer /usr/bin/composer /usr/bin/composer
 
-# Create system user to run Composer and Artisan Commands
-RUN useradd -G www-data,root -u $uid -d /home/$user $user
-RUN mkdir -p /home/$user/.composer && \
-    chown -R $user:$user /home/$user
-
 WORKDIR /var/www
 
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
-# Some aliasses.
-RUN echo 'alias pa="php artisan"' >> /home/$user/.bashrc
-RUN echo 'alias phpunit="./vendor/bin/phpunit"' >> /home/$user/.bashrc
-RUN echo 'alias refresh="pa migrate:fresh"' >> /home/$user/.bashrc
-
 # make laravel feel comfortable with mod-rewrite
 RUN a2enmod rewrite && service apache2 restart
-
-USER $user
 
 EXPOSE 80
