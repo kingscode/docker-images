@@ -1,8 +1,7 @@
 on:
+  push: [main]
   schedule:
     - cron: '0 1 * * *'
-  push:
-    - main
 
 jobs:
   docker:
