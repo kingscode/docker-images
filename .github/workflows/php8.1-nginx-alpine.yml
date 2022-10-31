@@ -25,9 +25,20 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       -
-        name: Build and push
+        name: Build and push for production
         uses: docker/build-push-action@v3
         with:
           context: ./php8.1-nginx-alpine
+          build-args: |
+            development=false
           push: true
           tags: thekingscode/php8.1-nginx-alpine:latest
+      -
+        name: Build and push for development
+        uses: docker/build-push-action@v3
+        with:
+          context: ./php8.1-nginx-alpine
+          build-args: |
+            development=true
+          push: true
+          tags: thekingscode/php8.1-nginx-alpine-dev:latest

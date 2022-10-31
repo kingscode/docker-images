@@ -2,16 +2,24 @@ FROM php:8.1-fpm-alpine
 
 ARG user=king
 ARG uid=1000
+ARG development='false'
+
+ENV DEVELOPMENT_BUILD=${development}
 
 # Essentials
 RUN echo "UTC" > /etc/timezone
-RUN apk add --no-cache zip unzip curl nginx openrc bash nano \
-    && sed -i 's/bin\/ash/bin\/bash/g' /etc/passwd
+RUN \
+     if [[ $development = 'true' ]] ;  \
+        then apk add bash nano && sed -i 's/bin\/ash/bin\/bash/g' /etc/passwd; \
+     fi
+
 
 # Packages
 RUN apk update \
     && apk upgrade \
     && apk add --no-cache \
+        # essentials
+        zip unzip curl nginx openrc  \
         # gmp (arithmethic calculations)
         gmp-dev \
         # regex
@@ -23,18 +31,18 @@ RUN apk update \
 # PHP extensions
 RUN docker-php-ext-install zip mysqli pdo_mysql gmp pcntl mbstring exif
 
-# XDebug (if needed)
-# RUN \
-#      if [[ $development = 'true' ]] ;  \
-#         then pecl install xdebug && docker-php-ext-enable xdebug; \
-#      fi
+#XDebug (if needed)
+RUN \
+     if [[ $development = 'true' ]] ;  \
+        then pecl install xdebug && docker-php-ext-enable xdebug; \
+     fi
 
-# OPCache (if not development)
-# RUN \
-#      if [[ -z $development || $development != 'true' ]] ;  \
-#         then \
-#           docker-php-ext-install opcache && docker-php-ext-enable opcache; \
-#      fi
+#OPCache (if not development)
+RUN \
+     if [[ -z $development || $development != 'true' ]] ;  \
+        then \
+          docker-php-ext-install opcache && docker-php-ext-enable opcache; \
+     fi
 
 # BCMath extension is required for Google Cloud Tasks
 RUN docker-php-ext-install bcmath
@@ -81,8 +89,10 @@ RUN sed -i "s/www-data/$user/g" /usr/local/etc/php-fpm.d/www.conf
 # Add user
 RUN addgroup -S $user && adduser -S $user -G $user -u $uid
 
-# Make /opt writable for PHPStorm (coverage)
-RUN chown $user:$user -Rf /opt && chmod -R 777 /opt
+# In development, make /opt writable for PHPStorm (coverage)
+RUN if [[ $development == 'true' ]] ;  \
+    then chown $user:$user -Rf /opt && chmod -R 777 /opt; \
+    fi
 
 # Prepare laravel directories for ownage
 RUN mkdir /var/www/storage /var/www/bootstrap
