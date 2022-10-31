@@ -38,6 +38,7 @@ RUN \
      fi
 
 #OPCache (if not development)
+COPY ./php8.1-fpm/opcache.ini /usr/local/etc/php/conf.d/
 RUN \
      if [[ -z $development || $development != 'true' ]] ;  \
         then \
@@ -81,6 +82,7 @@ RUN ln -sf /dev/stdout /var/log/nginx/access.log
 RUN ln -sf /dev/stderr /var/log/nginx/error.log
 
 RUN nginx -t
+RUN nginx
 
 # Configure PHP-FPM
 COPY ./php8.1-fpm/www.conf /usr/local/etc/php-fpm.d/www.conf
