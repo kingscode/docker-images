@@ -1,5 +1,9 @@
 FROM php:8.0-apache
 
+# remove the X-Powered-By header from PHP ini file
+RUN sed -i 's/expose_php = On/expose_php = Off/g' /usr/local/etc/php/php.ini-development
+RUN sed -i 's/expose_php = On/expose_php = Off/g' /usr/local/etc/php/php.ini-production
+
 RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y \
@@ -39,9 +43,5 @@ RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf
 
 # make laravel feel comfortable with mod-rewrite
 RUN a2enmod rewrite && service apache2 restart
-
-# remove the X-Powered-By header from PHP ini file
-RUN sed -i 's/expose_php = On/expose_php = Off/g' /usr/local/etc/php/php.ini-development
-RUN sed -i 's/expose_php = On/expose_php = Off/g' /usr/local/etc/php/php.ini-production
 
 EXPOSE 80
