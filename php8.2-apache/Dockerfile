@@ -1,5 +1,9 @@
 FROM php:8.2-apache
 
+# remove the X-Powered-By header from PHP ini file
+RUN sed -i 's/expose_php = On/expose_php = Off/g' /usr/local/etc/php/php.ini-development
+RUN sed -i 's/expose_php = On/expose_php = Off/g' /usr/local/etc/php/php.ini-production
+
 RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y \
