@@ -32,6 +32,7 @@ RUN apt-get update \
 RUN mkdir -p /var/www/
 
 ENV APACHE_DOCUMENT_ROOT /var/www/public
+RUN rm /var/run/apache2/apache2.pid
 
 # Install composer from image. You may change it to the latest
 COPY --from=composer /usr/bin/composer /usr/bin/composer
