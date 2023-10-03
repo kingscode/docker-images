@@ -1,5 +1,8 @@
 FROM php:8.0-apache
 
+RUN apk add --no-cache bash
+RUN ln -sf /bin/bash /bin/sh
+
 # remove the X-Powered-By header from PHP ini file
 RUN sed -i 's/expose_php = On/expose_php = Off/g' /usr/local/etc/php/php.ini-development
 RUN sed -i 's/expose_php = On/expose_php = Off/g' /usr/local/etc/php/php.ini-production

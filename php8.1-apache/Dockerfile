@@ -1,5 +1,8 @@
 FROM php:8.1-apache
 
+RUN apk add --no-cache bash
+RUN ln -sf /bin/bash /bin/sh
+
 RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y \
