@@ -1,6 +1,6 @@
 FROM php:8.2-apache
 
-RUN apk add --no-cache bash
+RUN apt-get install -y --no-cache bash
 RUN ln -sf /bin/bash /bin/sh
 
 # remove the X-Powered-By header from PHP ini file
