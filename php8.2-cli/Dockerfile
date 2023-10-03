@@ -1,6 +1,6 @@
 FROM php:8.2
 
-RUN apt-get install -y --no-cache bash
+RUN apt-get install -y bash
 RUN ln -sf /bin/bash /bin/sh
 
 RUN apt-get update \
