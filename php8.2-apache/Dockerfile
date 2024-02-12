@@ -26,7 +26,7 @@ RUN apt-get update \
     && pecl install -o -f redis \
     && pecl install xdebug \
     && docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ \
-    && docker-php-ext-install -j$(nproc) gd mbstring zip mysqli pdo_mysql gmp pcntl exif \
+    && docker-php-ext-install -j$(nproc) gd mbstring zip mysqli pdo_mysql gmp pcntl exif bcmath sockets \
     && docker-php-ext-enable redis exif \
     && docker-php-source delete \
     && rm -rf /tmp/pear
