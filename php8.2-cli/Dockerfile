@@ -21,8 +21,8 @@ RUN apt-get update \
         libonig-dev \
     && pecl install -o -f redis \
     && docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ \
-    && docker-php-ext-install -j$(nproc) gd mbstring zip mysqli pdo_mysql gmp pcntl exif \
-    && docker-php-ext-enable redis exif \
+    && docker-php-ext-install -j$(nproc) gd mbstring zip mysqli pdo_mysql gmp pcntl exif bcmath sockets \
+    && docker-php-ext-enable redis exif bcmath sockets \
     && docker-php-source delete \
     && rm -rf /tmp/pear
 
