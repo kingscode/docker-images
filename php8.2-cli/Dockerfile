@@ -19,6 +19,10 @@ RUN apt-get update \
         libgmp-dev \
         # regex
         libonig-dev \
+        # mongo requirements
+        libssl-dev \
+        pkg-config \
+
         && pecl install -o -f redis \
         && pecl install -o -f mongodb \
     && docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ \

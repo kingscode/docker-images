@@ -23,7 +23,11 @@ RUN apt-get install -y \
         # gmp
         libgmp-dev \
         # regex
-        libonig-dev
+        libonig-dev \
+        
+        # mongo requirements
+        libssl-dev \
+        pkg-config
         
 # PECL extensions
 RUN \
