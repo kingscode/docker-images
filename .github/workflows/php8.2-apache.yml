@@ -31,3 +31,11 @@ jobs:
           context: ./php8.2-apache
           push: true
           tags: thekingscode/php8.2-apache:latest
+          
+      - 
+        name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          context: ./php8.2-apache-prod
+          push: true
+          tags: thekingscode/php8.2-apache-prod:latest
