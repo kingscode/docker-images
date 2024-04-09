@@ -7,9 +7,10 @@ RUN ln -sf /bin/bash /bin/sh
 RUN sed -i 's/expose_php = On/expose_php = Off/g' /usr/local/etc/php/php.ini-development
 RUN sed -i 's/expose_php = On/expose_php = Off/g' /usr/local/etc/php/php.ini-production
 
-RUN apt-get update \
-    && apt-get upgrade -y \
-    && apt-get install -y \
+RUN apt-get update && apt-get upgrade -y
+
+# Essentials
+RUN apt-get install -y \
         # utils
         nano \
         unzip \
@@ -22,13 +23,23 @@ RUN apt-get update \
         # gmp
         libgmp-dev \
         # regex
-        libonig-dev \
-    && pecl install -o -f redis \
+        libonig-dev
+        
+# PECL extensions
+RUN \
+    pecl install -o -f redis  \
     && pecl install xdebug \
-    && docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ \
+    && pecl install mongodb
+    
+# PHP Extensions
+RUN \
+    docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ \
     && docker-php-ext-install -j$(nproc) gd mbstring zip mysqli pdo_mysql gmp pcntl exif bcmath sockets \
-    && docker-php-ext-enable redis exif bcmath sockets \
-    && docker-php-source delete \
+    && docker-php-ext-enable redis exif bcmath sockets mongodb
+
+# Cleanup
+RUN \
+    docker-php-source delete \
     && rm -rf /tmp/pear
 
 # Create working directory

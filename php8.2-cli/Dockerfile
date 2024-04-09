@@ -19,10 +19,11 @@ RUN apt-get update \
         libgmp-dev \
         # regex
         libonig-dev \
-    && pecl install -o -f redis \
+        && pecl install -o -f redis \
+        && pecl install -o -f mongodb \
     && docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ \
     && docker-php-ext-install -j$(nproc) gd mbstring zip mysqli pdo_mysql gmp pcntl exif bcmath sockets \
-    && docker-php-ext-enable redis exif bcmath sockets \
+    && docker-php-ext-enable redis exif bcmath sockets mongodb \
     && docker-php-source delete \
     && rm -rf /tmp/pear
 
