@@ -1,7 +1,5 @@
 FROM composer/satis:latest
 
-RUN apt-get update && apt-get install -y git
-
 RUN mkdir -p /root/.ssh
 RUN ssh-keyscan -H github.com > /root/.ssh/known_hosts
 
