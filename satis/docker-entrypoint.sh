@@ -5,7 +5,11 @@ if [ -d /var/www/.ssh-keys ];
 then
     NUMFILES=$(ls -1 /var/www/.ssh-keys | wc -l)
     echo "Found $NUMFILES additional SSH keys"
-    cp -r /var/www/.ssh-keys/* /root/.ssh/
+    for f in /var/www/.ssh-keys/*;
+    do
+        echo $(cat $f) > /root/.ssh/$(basename $f)
+    done
+    
     chmod 600 /root/.ssh/*
     echo "Copied $NUMFILES additional SSH keys"
     ls -al /root/.ssh/
