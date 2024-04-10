@@ -12,4 +12,4 @@ else
     echo "Found no additional SSH keys"
 fi
 
-sh /satis/bin/docker-entrypoint.sh
+php /satis/bin/satis build /build/config /var/www/public
