@@ -7,6 +7,4 @@ then
     chmod 600 /root/.ssh/*
 fi
 
-tail -f /dev/null
-
 sh /satis/bin/docker-entrypoint.sh
