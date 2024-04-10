@@ -21,6 +21,9 @@ else
     echo "Found no additional SSH keys"App\Validators\DiscountCode\CustomerValidator
 fi
 
+echo "Testing git clone"
+git clone backend-commons:kingscode/saas-backend-commons-package ./tmp 
+
 echo "Running satis build"
 
 cd /satis
