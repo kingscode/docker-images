@@ -1,18 +1,14 @@
-FROM thekingscode/php8.2-apache-prod
+FROM composer/satis:latest
 
 RUN apt-get update && apt-get install -y git
 
-COPY --from=composer/satis:latest /satis /var/www/satis
+RUN mkdir -p /root/.ssh
+RUN ssh-keyscan -H github.com > /root/.ssh/known_hosts
 
-RUN mkdir -p /home/root/.ssh
-RUN ssh-keyscan -H github.com > /home/root/.ssh/known_hosts
+RUN mkdir  -p /var/www/.ssh-keys && echo "hoi" > /var/www/.ssh-keys/test.txt
 
 # additional SSH keys provided via volume
-RUN if [ -d /var/www/.ssh-keys ]; then cp -r /var/www/.ssh-keys/* /home/root/.ssh/; fi
+RUN if [ -d /var/www/.ssh-keys ]; then cp -r /var/www/.ssh-keys/* /root/.ssh/; fi
 
 # Fix access for SSH private keys
-RUN chmod 600 /home/root/.ssh/*
-
-RUN service apache2 restart
-
-EXPOSE 80
+RUN chmod 600 /root/.ssh/*
