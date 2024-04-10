@@ -9,4 +9,10 @@ RUN ssh-keyscan -H github.com > /var/www/.ssh/known_hosts
 
 RUN chown -R www-data:www-data /var/www
 
+# additional SSH keys provided via volume
+RUN if [ -d /var/www/.ssh-keys ]; then cp -r /var/www/.ssh-keys/* /var/www/.ssh/; fi
+
+# Fix access for SSH private keys
+RUN chmod 600 /var/www/.ssh/*
+
 USER www-data
