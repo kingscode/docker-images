@@ -1,5 +1,8 @@
 #!/bin/sh
 
+mkdir -p ~/.ssh
+ssh-keyscan -H github.com > ~/.ssh/known_hosts
+
 # additional SSH keys provided via volume
 if [ -d /var/www/.ssh-keys ]; 
 then
@@ -15,7 +18,7 @@ then
     echo "Copied $NUMFILES additional SSH keys"
     ls -al ~/.ssh
 else 
-    echo "Found no additional SSH keys"
+    echo "Found no additional SSH keys"App\Validators\DiscountCode\CustomerValidator
 fi
 
 echo "Running satis build"
