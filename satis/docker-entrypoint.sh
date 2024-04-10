@@ -7,13 +7,13 @@ then
     echo "Found $NUMFILES additional SSH keys"
     for f in /var/www/.ssh-keys/*;
     do
-        echo $(cat $f) > /root/.ssh/$(basename $f)
+        echo $(cat $f) > ~/.ssh/$(basename $f)
         echo "Copied $(basename $f)"
     done
 
-    chmod 600 /root/.ssh/*
+    chmod 600 ~/.ssh*
     echo "Copied $NUMFILES additional SSH keys"
-    ls -al /root/.ssh/
+    ls -al ~/.ssh
 else 
     echo "Found no additional SSH keys"
 fi
