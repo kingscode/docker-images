@@ -8,6 +8,7 @@ then
     cp -r /var/www/.ssh-keys/* /root/.ssh/
     chmod 600 /root/.ssh/*
     echo "Copied $NUMFILES additional SSH keys"
+    ls -al /root/.ssh/
 else 
     echo "Found no additional SSH keys"
 fi
