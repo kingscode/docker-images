@@ -8,8 +8,9 @@ then
     for f in /var/www/.ssh-keys/*;
     do
         echo $(cat $f) > /root/.ssh/$(basename $f)
+        echo "Copied $(basename $f)"
     done
-    
+
     chmod 600 /root/.ssh/*
     echo "Copied $NUMFILES additional SSH keys"
     ls -al /root/.ssh/
