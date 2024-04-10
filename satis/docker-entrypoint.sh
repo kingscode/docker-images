@@ -12,5 +12,7 @@ else
     echo "Found no additional SSH keys"
 fi
 
-echo "Running satis entrypoint with args $@"
-sh /satis/bin/docker-entrypoint.sh $@
+echo "Running satis build"
+
+cd /satis
+php bin/satis --ansi -vvv build /build/satis.json /var/www/public
