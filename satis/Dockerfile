@@ -12,3 +12,7 @@ RUN if [ -d /var/www/.ssh-keys ]; then cp -r /var/www/.ssh-keys/* /home/root/.ss
 
 # Fix access for SSH private keys
 RUN chmod 600 /home/root/.ssh/*
+
+RUN service apache2 restart
+
+EXPOSE 80
