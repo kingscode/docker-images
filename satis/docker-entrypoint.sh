@@ -22,7 +22,7 @@ else
 fi
 
 echo "Testing git clone"
-git clone backend-commons:kingscode/saas-backend-commons-package ./tmp 
+git clone backend-commons:kingscode/saas-backend-commons-package /var/www/test 
 
 echo "Running satis build"
 
