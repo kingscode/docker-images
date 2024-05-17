@@ -1,4 +1,4 @@
-FROM php:8.2-apache
+FROM --platform=linux/x86_64 php:8.2-apache
 
 RUN apt-get install -y bash
 RUN ln -sf /bin/bash /bin/sh
