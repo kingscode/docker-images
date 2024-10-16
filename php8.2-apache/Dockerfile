@@ -24,7 +24,6 @@ RUN apt-get install -y \
         libgmp-dev \
         # regex
         libonig-dev \
-
         # mongo requirements
         libssl-dev \
         pkg-config
@@ -46,27 +45,20 @@ RUN \
     docker-php-source delete \
     && rm -rf /tmp/pear
 
-# Change ownership of /var/www to the new user
-RUN chown -R kingscode:www-data /var/www
-
 # Create working directory
 RUN mkdir -p /var/www/
 
-ENV APACHE_DOCUMENT_ROOT=/var/www/public
+ENV APACHE_DOCUMENT_ROOT /var/www/public
 
-# Modify Apache configuration (runs as root)
-RUN sed -ri -e "s!/var/www/html!${APACHE_DOCUMENT_ROOT}!g" /etc/apache2/sites-available/*.conf \
-    && sed -ri -e "s!/var/www/!${APACHE_DOCUMENT_ROOT}!g" /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
-
-# Install Composer
+# Install composer from image. You may change it to the latest
 COPY --from=composer /usr/bin/composer /usr/bin/composer
 
-# Switch to non-root user (optional if security needed)
-RUN useradd -ms /bin/bash kingscode && usermod -aG www-data kingscode
+WORKDIR /var/www
 
-USER kingscode
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
+RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
-# Make Laravel feel comfortable with mod-rewrite
+# make laravel feel comfortable with mod-rewrite
 RUN a2enmod rewrite && service apache2 restart
 
 EXPOSE 80
