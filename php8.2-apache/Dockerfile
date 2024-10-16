@@ -60,8 +60,6 @@ ENV APACHE_DOCUMENT_ROOT=/var/www/public
 # Install composer from image. You may change it to the latest
 COPY --from=composer /usr/bin/composer /usr/bin/composer
 
-USER kingscode
-
 WORKDIR /var/www
 
 RUN sed -ri -e "s!/var/www/html!${APACHE_DOCUMENT_ROOT}!g" /etc/apache2/sites-available/*.conf \
@@ -69,5 +67,7 @@ RUN sed -ri -e "s!/var/www/html!${APACHE_DOCUMENT_ROOT}!g" /etc/apache2/sites-av
 
 # make laravel feel comfortable with mod-rewrite
 RUN a2enmod rewrite && service apache2 restart
+
+USER kingscode
 
 EXPOSE 80
