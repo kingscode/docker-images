@@ -12,6 +12,8 @@ RUN apt-get update && apt-get install -y bash \
        libzip-dev \
        libgmp-dev \
        libonig-dev \
+       libssl-dev \
+       pkg-config \
     && apt-get update && apt-get upgrade -y \
     && rm -rf /var/lib/apt/lists/*
 
@@ -21,11 +23,13 @@ RUN sed -i 's/expose_php = On/expose_php = Off/g' /usr/local/etc/php/php.ini-dev
 
 # Install PECL extensions: Redis, Xdebug
 RUN pecl install -o -f redis xdebug \
-    && docker-php-ext-enable redis xdebug
+    && pecl install mongodb \
+    && docker-php-ext-enable redis xdebug \
+
 
 # Install PHP extensions
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -j$(nproc) gd mbstring zip mysqli pdo_mysql gmp pcntl exif bcmath sockets
+    && docker-php-ext-install -j$(nproc) gd mbstring zip mysqli pdo_mysql gmp pcntl exif bcmath sockets mongodb
 
 # Cleanup after build to reduce image size
 RUN docker-php-source delete \
