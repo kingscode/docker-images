@@ -62,8 +62,7 @@ RUN sed -ri -e "s!/var/www/html!${APACHE_DOCUMENT_ROOT}!g" /etc/apache2/sites-av
 COPY --from=composer /usr/bin/composer /usr/bin/composer
 
 # Switch to non-root user (optional if security needed)
-RUN useradd -u 1000 -ms /bin/bash kingscode \
-    && chown -R kingscode:www-data /var/www
+RUN useradd -ms /bin/bash kingscode && usermod -aG www-data kingscode
 
 USER kingscode
 
