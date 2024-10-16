@@ -1,65 +1,65 @@
-FROM --platform=linux/x86_64 php:8.2-apache
+FROM php:8.2-apache
 
-RUN apt-get install -y bash
-RUN ln -sf /bin/bash /bin/sh
+# Install necessary packages
+RUN apt-get update && apt-get install -y bash \
+    && ln -sf /bin/bash /bin/sh \
+    && apt-get install -y \
+       nano \
+       unzip \
+       libfreetype6-dev \
+       libjpeg62-turbo-dev \
+       libpng-dev \
+       libzip-dev \
+       libgmp-dev \
+       libonig-dev \
+    && apt-get update && apt-get upgrade -y \
+    && rm -rf /var/lib/apt/lists/*
 
-# remove the X-Powered-By header from PHP ini file
-RUN sed -i 's/expose_php = On/expose_php = Off/g' /usr/local/etc/php/php.ini-development
-RUN sed -i 's/expose_php = On/expose_php = Off/g' /usr/local/etc/php/php.ini-production
+# Disable X-Powered-By header
+RUN sed -i 's/expose_php = On/expose_php = Off/g' /usr/local/etc/php/php.ini-development \
+    && sed -i 's/expose_php = On/expose_php = Off/g' /usr/local/etc/php/php.ini-production
 
-RUN apt-get update && apt-get upgrade -y
+# Install PECL extensions: Redis, Xdebug
+RUN pecl install -o -f redis xdebug \
+    && docker-php-ext-enable redis xdebug
 
-# Essentials
-RUN apt-get install -y \
-        # utils
-        nano \
-        unzip \
-        #gd
-        libfreetype6-dev \
-        libjpeg62-turbo-dev \
-        libpng-dev \
-        #zip
-        libzip-dev \
-        # gmp
-        libgmp-dev \
-        # regex
-        libonig-dev \
-        
-        # mongo requirements
-        libssl-dev \
-        pkg-config
-        
-# PECL extensions
-RUN \
-    pecl install -o -f redis  \
-    && pecl install xdebug \
-    && pecl install mongodb
-    
-# PHP Extensions
-RUN \
-    docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ \
-    && docker-php-ext-install -j$(nproc) gd mbstring zip mysqli pdo_mysql gmp pcntl exif bcmath sockets \
-    && docker-php-ext-enable redis exif bcmath sockets mongodb
+# Install PHP extensions
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j$(nproc) gd mbstring zip mysqli pdo_mysql gmp pcntl exif bcmath sockets
 
-# Cleanup
-RUN \
-    docker-php-source delete \
+# Cleanup after build to reduce image size
+RUN docker-php-source delete \
     && rm -rf /tmp/pear
 
-# Create working directory
-RUN mkdir -p /var/www/
+# Create a non-root user with UID 1000 and set up a home directory
+RUN useradd -u 1000 -ms /bin/bash kingscode
 
-ENV APACHE_DOCUMENT_ROOT /var/www/public
+# Change ownership of /var/www to the new user
+RUN chown -R kingscode:www-data /var/www
 
-# Install composer from image. You may change it to the latest
-COPY --from=composer /usr/bin/composer /usr/bin/composer
+# Set Apache to use the non-root user and group
+RUN sed -i 's/User ${APACHE_RUN_USER}/User kingscode/' /etc/apache2/apache2.conf \
+    && sed -i 's/Group ${APACHE_RUN_GROUP}/Group www-data/' /etc/apache2/apache2.conf
 
+# Set working directory and adjust permissions
 WORKDIR /var/www
 
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
-RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+# Install Composer
+COPY --from=composer /usr/bin/composer /usr/bin/composer
 
-# make laravel feel comfortable with mod-rewrite
-RUN a2enmod rewrite && service apache2 restart
+# Switch to non-root user for the rest of the image
+USER kingscode
 
+# Setup Apache and document root for Laravel
+ENV APACHE_DOCUMENT_ROOT /var/www/public
+
+# Update Apache configuration
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf \
+    && sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf \
+    && a2enmod rewrite
+
+# Restart Apache to apply changes
+RUN service apache2 restart
+
+# Expose HTTP port
 EXPOSE 80
