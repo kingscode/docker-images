@@ -57,17 +57,20 @@ RUN mkdir -p /var/www/
 
 ENV APACHE_DOCUMENT_ROOT=/var/www/public
 
-# Install composer from image. You may change it to the latest
-COPY --from=composer /usr/bin/composer /usr/bin/composer
-
-WORKDIR /var/www
-
+# Modify Apache configuration (runs as root)
 RUN sed -ri -e "s!/var/www/html!${APACHE_DOCUMENT_ROOT}!g" /etc/apache2/sites-available/*.conf \
     && sed -ri -e "s!/var/www/!${APACHE_DOCUMENT_ROOT}!g" /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
-# make laravel feel comfortable with mod-rewrite
-RUN a2enmod rewrite && service apache2 restart
+# Install Composer
+COPY --from=composer /usr/bin/composer /usr/bin/composer
+
+# Switch to non-root user (optional if security needed)
+RUN useradd -u 1000 -ms /bin/bash kingscode \
+    && chown -R kingscode:www-data /var/www
 
 USER kingscode
+
+# Make Laravel feel comfortable with mod-rewrite
+RUN a2enmod rewrite && service apache2 restart
 
 EXPOSE 80
