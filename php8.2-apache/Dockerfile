@@ -46,9 +46,6 @@ RUN \
     docker-php-source delete \
     && rm -rf /tmp/pear
 
-# Create a non-root user with UID 1000 and set up a home directory
-RUN useradd -u 1000 -ms /bin/bash kingscode
-
 # Change ownership of /var/www to the new user
 RUN chown -R kingscode:www-data /var/www
 
