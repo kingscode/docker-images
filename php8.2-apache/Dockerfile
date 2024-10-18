@@ -26,7 +26,9 @@ RUN apt-get install -y \
         libonig-dev \
         # mongo requirements
         libssl-dev \
-        pkg-config
+        pkg-config \
+        # laravel mysql schema import requirement
+        mariadb-server
 
 # PECL extensions
 RUN \
