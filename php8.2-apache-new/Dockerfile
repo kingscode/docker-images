@@ -1,5 +1,4 @@
-ARG PHP_DIGEST=7d46f3796ea2c1c1d01db4cf3f7a8336cb9aee283b077036f23fa604386fc958
-
+ENV PHP_DIGEST=$DIGEST
 # Multi-stage build to reduce final image size and enhance security
 
 # Build Stage
