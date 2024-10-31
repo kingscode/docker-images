@@ -23,9 +23,12 @@ jobs:
       - name: Pull Latest Image and Get Digest
         id: digest
         run: |
-          # Use the Docker Registry API to fetch the digest
-          TAG_RESPONSE=$(curl -sSL "https://registry.hub.docker.com/v2/repositories/$IMAGE_NAME/tags/$TAG")
-
+          IMAGE_NAME="php"
+          TAG="8.2.25-apache"
+            
+          # Fetch the tag information from Docker Hub
+          TAG_RESPONSE=$(curl -sSL "https://registry.hub.docker.com/v2/repositories/library/$IMAGE_NAME/tags/$TAG")
+          
           # Extract the latest digest using jq
           # The digests are available under the 'images' array
           LATEST_DIGEST=$(echo "$TAG_RESPONSE" | jq -r '.images[0].digest')
