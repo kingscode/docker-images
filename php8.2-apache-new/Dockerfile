@@ -4,9 +4,9 @@ FROM php@sha256:7d46f3796ea2c1c1d01db4cf3f7a8336cb9aee283b077036f23fa604386fc958
 # Define a variable for the non-root user
 ARG APP_USER=kingscode
 
-# Install required packages as root
+# Install required packages with --no-install-recommends for security
 USER root
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
         bash \
         nano \
         unzip \
@@ -21,7 +21,8 @@ RUN apt-get update && apt-get install -y \
         mariadb-server \
     && ln -sf /bin/bash /bin/sh \
     && apt-get upgrade -y \
-    && docker-php-source extract
+    && docker-php-source extract \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Remove the X-Powered-By header from PHP ini file
 RUN sed -i 's/expose_php = On/expose_php = Off/g' /usr/local/etc/php/php.ini-{development,production}
@@ -32,8 +33,7 @@ RUN pecl install -o -f redis \
 
 # Install PHP extensions
 RUN docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ \
-    && docker-php-ext-install -j$(nproc) gd mbstring zip mysqli pdo_mysql gmp pcntl exif bcmath sockets \
-    && docker-php-ext-enable redis exif bcmath sockets
+    && docker-php-ext-install -j$(nproc) gd mbstring zip mysqli pdo_mysql gmp pcntl
 
 # Cleanup
 RUN docker-php-source delete \
@@ -47,8 +47,8 @@ RUN mkdir -p /var/www/ \
 # Set Apache document root
 ENV APACHE_DOCUMENT_ROOT /var/www/public
 
-# Install Composer from image
-COPY --from=composer /usr/bin/composer /usr/bin/composer
+# Use Composer's verified image and install Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Update Apache configuration
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf \
