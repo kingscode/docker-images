@@ -26,12 +26,11 @@ jobs:
           # Use the Docker Registry API to fetch the digest
           RESPONSE=$(curl -sSL "https://registry.hub.docker.com/v2/repositories/library/php/tags/8.2.25-apache")
 
-          # Extract the digest from the JSON response
+          # Extract the digest using jq
           DIGEST=$(echo "$RESPONSE" | jq -r '.images[0].digest')
-
-          # Output the digest
-          echo "Latest Digest: $digest"
-          echo "::set-output name=digest::$digest"
+          
+          # Output the digest to GITHUB_OUTPUT
+          echo "digest=$DIGEST" >> $GITHUB_OUTPUT
 
       -
         name: Login to Docker Hub
