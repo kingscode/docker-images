@@ -24,7 +24,7 @@ jobs:
         id: digest
         run: |
           # Use the Docker Registry API to fetch the digest
-          RESPONSE=$(curl -sSL "https://registry.hub.docker.com/v2/repositories/library/php/tags/8.2.25-apache")
+          TAG_RESPONSE=$(curl -sSL "https://registry.hub.docker.com/v2/repositories/library/php/tags/8.2.25-apache")
 
           # Extract the latest digest using jq
           LATEST_DIGEST=$(echo "$TAG_RESPONSE" | jq -r '.results[] | select(.name=="8.2.25-apache") | .images[] | .digest' | head -n 1)
