@@ -3,7 +3,7 @@ ARG PHP_DIGEST=7d46f3796ea2c1c1d01db4cf3f7a8336cb9aee283b077036f23fa604386fc958
 # Multi-stage build to reduce final image size and enhance security
 
 # Build Stage
-FROM php@sha256:${PHP_DIGEST} as base
+FROM php@sha256:${PHP_DIGEST} AS base
 
 # Define a non-root user for running the app securely
 ARG APP_USER=kingscode
@@ -51,7 +51,7 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
 RUN a2enmod rewrite
 
 # Final Stage
-FROM php@sha256:${PHP_DIGEST} as final
+FROM php@sha256:${PHP_DIGEST} AS final
 
 COPY --from=base /var/www /var/www
 COPY --from=base /usr/local/etc/php /usr/local/etc/php
