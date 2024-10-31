@@ -1,7 +1,5 @@
-ENV PHP_DIGEST=$DIGEST
-# Multi-stage build to reduce final image size and enhance security
+ARG PHP_DIGEST
 
-# Build Stage
 FROM php@sha256:${PHP_DIGEST} AS base
 
 # Define a non-root user for running the app securely

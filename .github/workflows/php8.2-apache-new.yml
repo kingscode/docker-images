@@ -30,8 +30,8 @@ jobs:
           DIGEST=$(echo "$RESPONSE" | jq -r '.images[0].digest')
 
           # Output the digest
-          echo "Latest Digest: $DIGEST"
-          echo "::set-output name=digest::$DIGEST"
+          echo "Latest Digest: $digest"
+          echo "::set-output name=digest::$digest"
 
       -
         name: Login to Docker Hub
@@ -49,4 +49,4 @@ jobs:
           sbom: true
           provenance: true
           build-args: |
-            "DIGEST=${{ steps.digest.outputs.digest }}"
+            "PHP_DIGEST=${{ steps.digest.outputs.digest }}"
