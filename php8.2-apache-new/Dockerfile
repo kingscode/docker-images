@@ -1,6 +1,6 @@
 ARG PHP_DIGEST
 
-FROM php@sha256:${PHP_DIGEST} AS base
+FROM php@${PHP_DIGEST} AS base
 
 # Define a non-root user for running the app securely
 ARG APP_USER=kingscode
@@ -48,7 +48,7 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
 RUN a2enmod rewrite
 
 # Final Stage
-FROM php@sha256:${PHP_DIGEST} AS final
+FROM php@${PHP_DIGEST} AS final
 
 # Create the non-root user again in the final stage
 ARG APP_USER=kingscode
