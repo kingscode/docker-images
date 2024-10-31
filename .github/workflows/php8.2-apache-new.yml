@@ -30,11 +30,13 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       -
         name: Build and push
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           context: ./php8.2-apache-new
           push: true
           tags: thekingscode/php8.2-apache-new:latest
           load: false  # For Buildx caching, DCT applies on push
           build-args: |
-            DOCKER_CONTENT_TRUST=1  # Enforce DCT in the build args
+            BUILDKIT_INLINE_CACHE=1  # Optional: Use inline caching
+          metadata: |
+            mode=max  # Set maximum provenance mode
