@@ -24,14 +24,14 @@ jobs:
         id: digest
         run: |
           # Use the Docker Registry API to fetch the digest
-          TAG_RESPONSE=$(curl -sSL "https://registry.hub.docker.com/v2/repositories/library/php/tags/8.2.25-apache")
+          TAG_RESPONSE=$(curl -sSL "https://registry.hub.docker.com/v2/repositories/$IMAGE_NAME/tags/$TAG")
 
           # Extract the latest digest using jq
-          LATEST_DIGEST=$(echo "$TAG_RESPONSE" | jq -r '.results[] | select(.name=="8.2.25-apache") | .images[] | .digest' | head -n 1)
+          # The digests are available under the 'images' array
+          LATEST_DIGEST=$(echo "$TAG_RESPONSE" | jq -r '.images[0].digest')
 
           # Output the latest digest to GITHUB_OUTPUT
           echo "latest_digest=$LATEST_DIGEST" >> $GITHUB_OUTPUT
-
       -
         name: Login to Docker Hub
         uses: docker/login-action@v3
