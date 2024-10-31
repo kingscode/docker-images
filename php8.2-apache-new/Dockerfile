@@ -53,10 +53,15 @@ RUN a2enmod rewrite
 # Final Stage
 FROM php@sha256:${PHP_DIGEST} AS final
 
+# Create the non-root user again in the final stage
+ARG APP_USER=kingscode
+RUN useradd -ms /bin/bash ${APP_USER}
+
 COPY --from=base /var/www /var/www
 COPY --from=base /usr/local/etc/php /usr/local/etc/php
 
 # Set permissions and non-root user
+RUN chown -R ${APP_USER}:${APP_USER} /var/www
 USER ${APP_USER}
 WORKDIR /var/www
 
