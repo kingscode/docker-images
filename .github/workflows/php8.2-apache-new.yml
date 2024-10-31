@@ -27,11 +27,8 @@ jobs:
           RESPONSE=$(curl -sSL "https://registry.hub.docker.com/v2/repositories/library/php/tags/8.2.25-apache")
 
           # Extract the latest digest using jq
-          LATEST_DIGEST=$(echo "$RESPONSE" | jq -r '.results[] | select(.name=="8.2.25-apache") | .images[] | .digest' | head -n 1)
+          DIGEST=$(echo "$RESPONSE" | jq -r '.results[] | select(.name=="8.2.25-apache") | .images[] | .digest' | head -n 1)
 
-          # Extract the digest using jq
-          DIGEST=$(echo "$RESPONSE" | jq -r '.images[0].digest')
-          
           # Output the digest to GITHUB_OUTPUT
           echo "digest=$DIGEST" >> $GITHUB_OUTPUT
 
