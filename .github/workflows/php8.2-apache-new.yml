@@ -24,29 +24,17 @@ jobs:
         run: |
           docker pull php:8.2
 
-      - name: Verify Image Pull
-        run: |
-          # Verify that the image was pulled successfully
-          if ! docker images php:8.2 -q; then
-            echo "Error: php:8.2 image not found locally after pull."
-            exit 1
-          fi
-
-      - name: Install Trivy
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y wget
-          wget https://github.com/aquasecurity/trivy/releases/download/v0.32.1/trivy_0.32.1_Linux-64bit.deb
-          sudo dpkg -i trivy_0.32.1_Linux-64bit.deb
-
-      - name: Scan Image with Trivy
-        run: |
-          trivy image --severity CRITICAL,HIGH php:8.2
+      - name: Scan PHP 8.2 Image with Trivy
+        # Use the official Trivy GitHub Action for scanning
+        uses: aquasecurity/trivy-action@v0.10.0
+        with:
+          image-ref: php:8.2
+          severity: CRITICAL,HIGH
 
       - name: Get Digest of Pulled PHP 8.2 Image
         id: digest
         run: |
-          # Get the latest digest of the pulled php:8.2 image
+          # Ensure the image is pulled and retrieve its digest
           LATEST_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' php:8.2 | cut -d'@' -f 2)
           echo "latest_digest=$LATEST_DIGEST" >> $GITHUB_OUTPUT
 
