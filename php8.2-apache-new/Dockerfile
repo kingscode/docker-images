@@ -36,34 +36,23 @@ RUN mkdir -p /var/www/ \
     && useradd -ms /bin/bash ${APP_USER} \
     && chown -R ${APP_USER}:${APP_USER} /var/www/
 
-
 # Apache setup
 ENV APACHE_DOCUMENT_ROOT /var/www/public
-
-# Ensure the document root directory exists
-RUN mkdir -p ${APACHE_DOCUMENT_ROOT}
-
-# Copy Composer to the image
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Update Apache config to use custom document root
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf \
     && sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
-# Enable necessary Apache modules
-RUN a2enmod rewrite \
-    && a2enmod headers \
-    && a2enmod ssl
+# Enable mod-rewrite
+RUN a2enmod rewrite
 
 # Final Stage
-FROM php:8.2-apache@${PHP_DIGEST} AS final
+FROM php:8.2-apache AS final
 
 # Create the non-root user again in the final stage
 ARG APP_USER=kingscode
 RUN useradd -ms /bin/bash ${APP_USER}
-
-# Ensure the document root exists
-RUN mkdir -p ${APACHE_DOCUMENT_ROOT}
 
 COPY --from=base /var/www /var/www
 COPY --from=base /usr/local/etc/php /usr/local/etc/php
@@ -76,5 +65,4 @@ WORKDIR /var/www
 # Expose Apache port
 EXPOSE 80
 
-# Start Apache in the foreground
 CMD ["apache2-foreground"]
