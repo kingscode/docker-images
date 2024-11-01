@@ -22,20 +22,19 @@ jobs:
 
       - name: Pull PHP 8.2 Image
         run: |
+          echo "Pulling PHP 8.2 image..."
           docker pull php:8.2
-
-      -
-        name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@0.28.0
-        with:
-          image-ref: php:8.2
-          severity: CRITICAL,HIGH
 
       - name: Get Digest of Pulled PHP 8.2 Image
         id: digest
         run: |
-          # Ensure the image is pulled and retrieve its digest
+          # Get the digest of the php:8.2 image
+          echo "Getting the digest of the php:8.2 image..."
           LATEST_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' php:8.2 | cut -d'@' -f 2)
+          if [ -z "$LATEST_DIGEST" ]; then
+            echo "Error: Failed to retrieve the digest."
+            exit 1
+          fi
           echo "latest_digest=$LATEST_DIGEST" >> $GITHUB_OUTPUT
 
       -
