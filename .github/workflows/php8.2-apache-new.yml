@@ -15,22 +15,9 @@ jobs:
       -
         name: Set up QEMU
         uses: docker/setup-qemu-action@v3
-
       -
         name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-
-      - name: Get the latest digest of php:8.2-apache (linux/amd64)
-        id: digest
-        run: |
-          # Fetch the tags for the php:8.2-apache image from Docker Hub
-          TAG_RESPONSE=$(curl -sSL "https://registry.hub.docker.com/v2/repositories/library/php/tags?name=8.2-apache")
-
-          # Extract the latest digest for the linux/amd64 architecture
-          LATEST_DIGEST=$(echo "$TAG_RESPONSE" | jq -r '.results[] | select(.name=="8.2-apache") | .images[] | select(.architecture=="amd64") | .digest' | head -n 1)
-
-          # Output the latest digest to GITHUB_OUTPUT
-          echo "latest_digest=$LATEST_DIGEST" >> $GITHUB_OUTPUT
 
       -
         name: Login to Docker Hub
@@ -47,5 +34,3 @@ jobs:
           tags: thekingscode/php8.2-apache-new:latest
           sbom: true
           provenance: true
-          build-args: |
-            "PHP_DIGEST=${{ steps.digest.outputs.latest_digest }}"
