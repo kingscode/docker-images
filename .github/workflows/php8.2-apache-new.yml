@@ -29,7 +29,7 @@ jobs:
           # Fetch the tag information from Docker Hub
           TAG_RESPONSE=$(curl -sSL "https://registry.hub.docker.com/v2/repositories/library/$IMAGE_NAME/tags/$TAG")
           
-          latest_digest=$(echo TAG_RESPONSE | jq -r '.images | max_by(.last_pulled) | .digest')
+          latest_digest=$(echo "$TAG_RESPONSE" | jq -r '.images | max_by(.last_pulled) | .digest')
           echo "latest_digest=$latest_digest" >> $GITHUB_OUTPUT
       -
         name: Login to Docker Hub
