@@ -24,8 +24,9 @@ jobs:
         run: |
           docker pull php:8.2
 
-      - name: Scan PHP 8.2 Image with Trivy
-        uses: aquasecurity/trivy-action@v0.28.0
+      -
+        name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@0.28.0
         with:
           image-ref: php:8.2
           severity: CRITICAL,HIGH
