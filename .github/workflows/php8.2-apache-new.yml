@@ -20,6 +20,18 @@ jobs:
         name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      - name: Pull PHP 8.2 Image
+        run: |
+          docker pull php:8.2
+
+      - name: Verify Image Pull
+        run: |
+          # Verify that the image was pulled successfully
+          if ! docker images php:8.2 -q; then
+            echo "Error: php:8.2 image not found locally after pull."
+            exit 1
+          fi
+
       - name: Install Trivy
         run: |
           sudo apt-get update
