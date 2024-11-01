@@ -24,7 +24,7 @@ jobs:
         id: digest
         run: |
           IMAGE_NAME="php"
-          TAG="8.2.25-apache"
+          TAG="8.2-apache"
             
           # Fetch the tag information from Docker Hub
           TAG_RESPONSE=$(curl -sSL "https://registry.hub.docker.com/v2/repositories/library/$IMAGE_NAME/tags/$TAG")
