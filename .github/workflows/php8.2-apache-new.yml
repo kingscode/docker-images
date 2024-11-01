@@ -20,21 +20,16 @@ jobs:
         name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Pull PHP 8.2 Image
-        run: |
-          echo "Pulling PHP 8.2 image..."
-          docker pull php:8.2
-
-      - name: Get Digest of Pulled PHP 8.2 Image
+      - name: Get the latest digest of php:8.2-apache (linux/amd64)
         id: digest
         run: |
-          # Get the digest of the php:8.2 image
-          echo "Getting the digest of the php:8.2 image..."
-          LATEST_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' php:8.2 | cut -d'@' -f 2)
-          if [ -z "$LATEST_DIGEST" ]; then
-            echo "Error: Failed to retrieve the digest."
-            exit 1
-          fi
+          # Fetch the tags for the php:8.2-apache image from Docker Hub
+          TAG_RESPONSE=$(curl -sSL "https://registry.hub.docker.com/v2/repositories/library/php/tags?name=8.2-apache")
+
+          # Extract the latest digest for the linux/amd64 architecture
+          LATEST_DIGEST=$(echo "$TAG_RESPONSE" | jq -r '.results[] | select(.name=="8.2-apache") | .images[] | select(.architecture=="amd64") | .digest' | head -n 1)
+
+          # Output the latest digest to GITHUB_OUTPUT
           echo "latest_digest=$LATEST_DIGEST" >> $GITHUB_OUTPUT
 
       -
