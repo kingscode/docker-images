@@ -29,8 +29,8 @@ jobs:
           # Fetch the tag information from Docker Hub
           TAG_RESPONSE=$(curl -sSL "https://registry.hub.docker.com/v2/repositories/library/$IMAGE_NAME/tags/$TAG")
           
-          LATEST_DIGEST=$(echo "$TAG_RESPONSE" | jq -r '.images[] | select(.os == "linux") | .digest' | head -n 1)
-          
+          LATEST_DIGEST=$(echo "$TAG_RESPONSE" | jq -r '.images[] | select(.os == "linux" and .architecture == "amd64") | .digest' | head -n 1)
+
           echo $LATEST_DIGEST
           echo "latest_digest=$LATEST_DIGEST" >> $GITHUB_OUTPUT
       -
