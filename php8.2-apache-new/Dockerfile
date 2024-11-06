@@ -26,7 +26,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install PECL extensions
-RUN pecl install -o -f redis && rm -rf /tmp/pear
+RUN pecl install -o -f redis xdebug && rm -rf /tmp/pear
 
 # Install PHP extensions
 RUN docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ \
