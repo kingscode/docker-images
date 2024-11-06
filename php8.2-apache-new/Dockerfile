@@ -1,11 +1,11 @@
-ARG PHP_DIGEST
-
+# Use php:8.2-apache as the base image
 FROM php:8.2-apache AS base
 
 # Define a non-root user for running the app securely
 ARG APP_USER=kingscode
+ARG APP_UID=1000
 
-# Install required packages with no recommended dependencies
+# Update and install required packages
 RUN apt-get update && apt-get install -y --no-install-recommends \
     sudo \
     bash \
@@ -23,50 +23,37 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     dnsutils \
     iputils-ping \
     iproute2 \
-    && ln -sf /bin/bash /bin/sh \
-    && apt-get upgrade -y \
-    && docker-php-source extract \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install PECL extensions
-RUN pecl install -o -f redis xdebug && rm -rf /tmp/pear
+RUN pecl install -o -f redis && rm -rf /tmp/pear
 
 # Install PHP extensions
 RUN docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ \
     && docker-php-ext-install -j$(nproc) gd mbstring zip mysqli pdo_mysql gmp pcntl
 
-# Setup document root and create non-root user
-RUN mkdir -p /var/www/ \
-    && useradd -ms /bin/bash ${APP_USER} \
-    && chown -R ${APP_USER}:${APP_USER} /var/www/
-
-# Apache setup
+# Setup Apache document root and configure permissions
 ENV APACHE_DOCUMENT_ROOT /var/www/public
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+RUN mkdir -p ${APACHE_DOCUMENT_ROOT} \
+    && chown -R www-data:www-data /var/www \
+    && useradd -ms /bin/bash -u ${APP_UID} ${APP_USER} \
+    && chown -R ${APP_USER}:${APP_USER} /var/www
 
 # Update Apache config to use custom document root
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf \
     && sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
-# Enable mod-rewrite
+# Enable Apache mod-rewrite for frameworks (e.g., Laravel)
 RUN a2enmod rewrite
 
-# Final Stage
-FROM php:8.2-apache AS final
+# Copy Composer for dependency management
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Create the non-root user again in the final stage
-ARG APP_USER=kingscode
-RUN useradd -ms /bin/bash ${APP_USER}
-
-COPY --from=base /var/www /var/www
-COPY --from=base /usr/local/etc/php /usr/local/etc/php
-
-# Set permissions and non-root user
-RUN chown -R ${APP_USER}:${APP_USER} /var/www
-USER ${APP_USER}
-WORKDIR /var/www
-
-# Expose Apache port
+# Expose the necessary port for Apache
 EXPOSE 80
 
+# Set non-root user to prevent permissions issues when extending
+USER ${APP_USER}
+
+# Define entry point
 CMD ["apache2-foreground"]
