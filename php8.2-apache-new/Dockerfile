@@ -7,6 +7,7 @@ ARG APP_USER=kingscode
 
 # Install required packages with no recommended dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    sudo \
     bash \
     nano \
     unzip \
@@ -19,6 +20,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libssl-dev \
     pkg-config \
     mariadb-server \
+    dnsutils \
+    iputils-ping \
+    iproute2 \
     && ln -sf /bin/bash /bin/sh \
     && apt-get upgrade -y \
     && docker-php-source extract \
