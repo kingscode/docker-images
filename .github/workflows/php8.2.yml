@@ -39,7 +39,7 @@ jobs:
         name: Build & Push - PHP8.2 Base Apache Image
         uses: docker/build-push-action@v3
         with:
-          context: ./php8.2/apache
+          context: ./php8.2/base-apache
           push: true
           tags: thekingscode/php8.2-base-apache:latest
           sbom: true
