@@ -44,9 +44,6 @@ RUN docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/i
 # Copy Composer for dependency management
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Set non-root user to prevent permissions issues when extending
-USER ${APP_USER}
-
 WORKDIR ${WORKING_DIRECTORY}
 
 # Update Apache config to use custom document root
