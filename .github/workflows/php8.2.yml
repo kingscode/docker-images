@@ -24,8 +24,9 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+
       -
-        name: Build and push
+        name: Build & Push - PHP8.2 Base Image
         uses: docker/build-push-action@v3
         with:
           context: ./php8.2/base
@@ -35,7 +36,7 @@ jobs:
           provenance: true
 
       -
-        name: Build and push
+        name: Build & Push - PHP8.2 Base Apache Image
         uses: docker/build-push-action@v3
         with:
           context: ./php8.2/apache
