@@ -31,3 +31,5 @@ jobs:
           context: ./php8.2-base
           push: true
           tags: thekingscode/php8.2-base:latest
+          sbom: true
+          provenance: true
