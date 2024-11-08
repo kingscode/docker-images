@@ -44,7 +44,7 @@ jobs:
         with:
           context: ./php8.2/base
           push: true
-          tags: thekingscode/php8.2-mongo:latest
+          tags: thekingscode/php8.2-base-mongo:latest
           sbom: true
           provenance: true
           build-args: |
@@ -58,7 +58,7 @@ jobs:
         with:
           context: ./php8.2/base-apache
           push: true
-          tags: thekingscode/php8.2-apache:latest
+          tags: thekingscode/php8.2-base-apache:latest
           sbom: true
           provenance: true
           build-args: |
