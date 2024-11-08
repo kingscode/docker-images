@@ -56,7 +56,7 @@ RUN if [ "$DEVELOPMENT" = "true" ]; then \
 fi
 
 RUN if [ "$CLI" = "true" ]; then \
-    RUN docker-php-ext-install opcache &&  \
+    docker-php-ext-install opcache &&  \
     docker-php-ext-enable opcache &&  \
     docker-php-source delete; \
 fi

@@ -56,6 +56,13 @@ RUN if [ "$DEVELOPMENT" = "true" ]; then \
     pecl install xdebug && docker-php-ext-enable xdebug && rm -rf /tmp/pear; \
 fi
 
+
+RUN if [ "$CLI" = "true" ]; then \
+    docker-php-ext-install opcache &&  \
+    docker-php-ext-enable opcache &&  \
+    docker-php-source delete; \
+fi
+
 # Install PECL extensions
 RUN pecl install -o -f redis
 
