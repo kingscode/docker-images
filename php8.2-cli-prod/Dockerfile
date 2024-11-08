@@ -1,4 +1,4 @@
-FROM thekingscode/php8.2-cli
+FROM thekingscode/php8.2-base
 
 RUN docker-php-ext-install opcache && docker-php-ext-enable opcache \
     && docker-php-source delete \

@@ -66,12 +66,13 @@ jobs:
         name: Build & Push - PHP8.2 Base PROD CLI
         uses: docker/build-push-action@v3
         with:
-          context: ./php8.2/base-cli
+          context: ./php8.2/base
           push: true
-          tags: thekingscode/php8.2-dev-mongo:latest
+          tags: thekingscode/php8.2-cli:latest
           sbom: true
           provenance: true
           build-args: |
-            "DEVELOPMENT=true"
+            "DEVELOPMENT=false"
             "IMAGICK=true"
-            "MONGO=true"        
+            "MONGO=true"  
+            "CLI=true"

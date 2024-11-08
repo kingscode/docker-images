@@ -9,6 +9,7 @@ ENV WORKING_DIRECTORY=/var/www
 ARG DEVELOPMENT=${DEVELOPMENT:-false}
 ARG MONGODB=${MONGODB:-false}
 ARG IMAGICK=${IMAGICK:-false}
+ARG CLI=${CLI:-false}
 
 # Create a new user with a specified UID, home directory, working directory, and default shell
 RUN mkdir -p ${WORKING_DIRECTORY} \
@@ -52,6 +53,12 @@ fi
 
 RUN if [ "$DEVELOPMENT" = "true" ]; then \
     pecl install xdebug && docker-php-ext-enable xdebug && rm -rf /tmp/pear; \
+fi
+
+RUN if [ "$CLI" = "true" ]; then \
+    RUN docker-php-ext-install opcache &&  \
+    docker-php-ext-enable opcache &&  \
+    docker-php-source delete; \
 fi
 
 # Install PECL extensions
