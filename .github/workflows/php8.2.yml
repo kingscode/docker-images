@@ -34,29 +34,6 @@ jobs:
           tags: thekingscode/php8.2-base:latest
           sbom: true
           provenance: true
-
-      -
-        name: Build & Push - PHP8.2 Base Prod
-        uses: docker/build-push-action@v3
-        with:
-          context: ./php8.2/base
-          push: true
-          tags: thekingscode/php8.2-cli:latest
-          sbom: true
-          provenance: true
-          build-args: |
-            "IMAGICK=true"
-            "CLI=false"
-
-      -
-        name: Build & Push - PHP8.2 Base Prod CLI
-        uses: docker/build-push-action@v3
-        with:
-          context: ./php8.2/base
-          push: true
-          tags: thekingscode/php8.2-cli:latest
-          sbom: true
-          provenance: true
           build-args: |
             "IMAGICK=true"
             "CLI=true"
@@ -67,38 +44,39 @@ jobs:
         with:
           context: ./php8.2/base
           push: true
-          tags: thekingscode/php8.2-base:latest
+          tags: thekingscode/php8.2-mongo:latest
           sbom: true
           provenance: true
           build-args: |
             "IMAGICK=true"
             "MONGO=true"
+            "CLI=true"
 
       -
-        name: Build & Push - PHP8.2 Base MONGO Prod
+        name: Build & Push - PHP8.2 Base Apache Image
+        uses: docker/build-push-action@v3
+        with:
+          context: ./php8.2/base-apache
+          push: true
+          tags: thekingscode/php8.2-base-apache:latest
+          sbom: true
+          provenance: true
+          build-args: |
+            "IMAGICK=true"
+            "CLI=true"
+
+      -
+        name: Build & Push - PHP8.2 Base Apache MONGO Image
         uses: docker/build-push-action@v3
         with:
           context: ./php8.2/base
           push: true
-          tags: thekingscode/php8.2-cli:latest
+          tags: thekingscode/php8.2-apache-mongo:latest
           sbom: true
           provenance: true
           build-args: |
             "IMAGICK=true"
             "MONGO=true"
-
-      -
-        name: Build & Push - PHP8.2 Base MONGO Prod CLI
-        uses: docker/build-push-action@v3
-        with:
-          context: ./php8.2/base
-          push: true
-          tags: thekingscode/php8.2-cli:latest
-          sbom: true
-          provenance: true
-          build-args: |
-            "IMAGICK=true"
-            "MONGO=true"  
             "CLI=true"
 
       -
