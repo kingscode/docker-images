@@ -36,11 +36,42 @@ jobs:
           provenance: true
 
       -
-        name: Build & Push - PHP8.2 Base Apache Image
+        name: Build & Push - PHP8.2 Base DEV Image
         uses: docker/build-push-action@v3
         with:
-          context: ./php8.2/base-apache
+          context: ./php8.2/base
           push: true
-          tags: thekingscode/php8.2-base-apache:latest
+          tags: thekingscode/php8.2-dev:latest
           sbom: true
           provenance: true
+          build-args: |
+            "DEVELOPMENT=true"
+            "IMAGICK=true"
+
+      -
+        name: Build & Push - PHP8.2 Base DEV + MONGO Image
+        uses: docker/build-push-action@v3
+        with:
+          context: ./php8.2/base
+          push: true
+          tags: thekingscode/php8.2-dev-mongo:latest
+          sbom: true
+          provenance: true
+          build-args: |
+            "DEVELOPMENT=true"
+            "IMAGICK=true"
+            "MONGO=true"        
+
+      -
+        name: Build & Push - PHP8.2 Base PROD CLI
+        uses: docker/build-push-action@v3
+        with:
+          context: ./php8.2/base-cli
+          push: true
+          tags: thekingscode/php8.2-dev-mongo:latest
+          sbom: true
+          provenance: true
+          build-args: |
+            "DEVELOPMENT=true"
+            "IMAGICK=true"
+            "MONGO=true"        
