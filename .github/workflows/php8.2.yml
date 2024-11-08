@@ -47,6 +47,7 @@ jobs:
           build-args: |
             "IMAGICK=true"
             "CLI=false"
+
       -
         name: Build & Push - PHP8.2 Base Prod CLI
         uses: docker/build-push-action@v3
@@ -85,6 +86,7 @@ jobs:
           build-args: |
             "IMAGICK=true"
             "MONGO=true"
+
       -
         name: Build & Push - PHP8.2 Base MONGO Prod CLI
         uses: docker/build-push-action@v3
