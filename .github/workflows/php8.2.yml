@@ -105,3 +105,4 @@ jobs:
             "DEVELOPMENT=true"
             "IMAGICK=true"
             "MONGO=true"
+            
