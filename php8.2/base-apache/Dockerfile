@@ -100,11 +100,17 @@ fi
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf \
     && sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
+# Set the ServerName globally to suppress warning
+RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
+
 # Adjust Apache config to allow .htaccess override for Laravel mod_rewrite
 RUN sed -ri -e 's/AllowOverride None/AllowOverride All/g' /etc/apache2/apache2.conf
 
 # Enable Apache mod_rewrite for Laravel
 RUN a2enmod rewrite
+
+# Ensure correct permissions on log directory
+RUN chown -R www-data:www-data ${LOGS} && chmod -R 775 ${LOGS}
 
 # Expose port 80 for Apache
 EXPOSE 80
