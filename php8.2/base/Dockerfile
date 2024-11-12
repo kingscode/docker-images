@@ -31,7 +31,6 @@ RUN apt-get update && \
     libgmp-dev \
     libonig-dev \
     libssl-dev \
-    pkg-config \
     mariadb-server \
     dnsutils \
     iputils-ping \
