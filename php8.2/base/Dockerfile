@@ -20,10 +20,10 @@ ENV CLI=${CLI}
 
 # Create a new user with a specified UID, home directory, working directory, and default shell
 RUN mkdir -p ${WORKING_DIRECTORY} \
-    && mkdir -p ${BOOTSTRAP} ${LOGS} \
+    && mkdir -p ${BOOTSTRAP} ${STORAGE} \
     && useradd -ms /bin/bash -u ${APP_UID} ${APP_USER} \
     && chown -R ${APP_USER}:${APP_USER} ${WORKING_DIRECTORY} \
-    && chmod -R 775 ${BOOTSTRAP} ${LOGS}
+    && chmod -R 775 ${BOOTSTRAP} ${STORAGE}
 
 # Update and install required packages
 RUN apt-get update && \

@@ -24,7 +24,7 @@ ENV CLI=${CLI}
 # Create the application directory structure and set permissions
 RUN mkdir -p ${WORKING_DIRECTORY} \
     && mkdir -p ${APACHE_DOCUMENT_ROOT} \
-    && mkdir -p ${BOOTSTRAP} ${LOGS} \
+    && mkdir -p ${BOOTSTRAP} ${STORAGE} \
     && useradd -ms /bin/bash -u ${APP_UID} ${APP_USER} \
     && chown -R ${APP_USER}:${APP_USER} ${WORKING_DIRECTORY} \
     && chmod -R 775 ${BOOTSTRAP} ${STORAGE}
