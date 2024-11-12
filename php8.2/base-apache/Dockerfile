@@ -107,7 +107,7 @@ RUN a2enmod rewrite
 RUN chown -R www-data:www-data ${STORAGE} ${BOOTSTRAP} \
     && chmod -R 775 ${STORAGE} ${BOOTSTRAP}
 
-# Expose port 80 for Apache
+# Expose port 80 for Apache (you can change to 8080 if needed)
 EXPOSE 80
 
 # Start Apache in the foreground
