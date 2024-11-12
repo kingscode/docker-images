@@ -35,6 +35,18 @@ jobs:
           sbom: true
           provenance: true
           build-args: |
+            "CLI=true"
+
+      -
+        name: Build & Push - PHP8.2 Base Imagick Image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./php8.2/base
+          push: true
+          tags: thekingscode/php8.2-imagick-base:latest
+          sbom: true
+          provenance: true
+          build-args: |
             "IMAGICK=true"
             "CLI=true"
 
@@ -59,6 +71,18 @@ jobs:
           context: ./php8.2/base-apache
           push: true
           tags: thekingscode/php8.2-base-apache:latest
+          sbom: true
+          provenance: true
+          build-args: |
+            "CLI=true"
+
+      -
+        name: Build & Push - PHP8.2 Base Imagick Apache Image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./php8.2/base-apache
+          push: true
+          tags: thekingscode/php8.2-base-imagick-apache:latest
           sbom: true
           provenance: true
           build-args: |
