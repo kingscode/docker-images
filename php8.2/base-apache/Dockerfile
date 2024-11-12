@@ -1,35 +1,33 @@
-# Use the official PHP image with Apache
-FROM php:8.2-apache
+# Use the official PHP image with Nginx
+FROM php:8.2-fpm
 
-ARG DEVELOPMENT=false
-ARG MONGODB=false
-ARG IMAGICK=false
-ARG CLI=false
+# Install Nginx
+RUN apt-get update && apt-get install -y nginx
 
 # Define environment variables
 ENV ROOT_USER=root
 ENV APP_USER=kingscode
 ENV APP_UID=1000
 ENV WORKING_DIRECTORY=/var/www
-ENV APACHE_DOCUMENT_ROOT=${WORKING_DIRECTORY}/public
+ENV NGINX_DOCUMENT_ROOT=${WORKING_DIRECTORY}/public
 
 ENV STORAGE=${WORKING_DIRECTORY}/storage
 ENV BOOTSTRAP=${WORKING_DIRECTORY}/bootstrap/cache
+ENV LOGS=${STORAGE}/logs
 
-ENV DEVELOPMENT=${DEVELOPMENT}
-ENV MONGODB=${MONGODB}
-ENV IMAGICK=${IMAGICK}
-ENV CLI=${CLI}
+ARG DEVELOPMENT=${DEVELOPMENT:-false}
+ARG MONGODB=${MONGODB:-false}
+ARG IMAGICK=${IMAGICK:-false}
 
 # Create the application directory structure and set permissions
 RUN mkdir -p ${WORKING_DIRECTORY} \
-    && mkdir -p ${APACHE_DOCUMENT_ROOT} \
-    && mkdir -p ${BOOTSTRAP} ${STORAGE} \
+    && mkdir -p ${NGINX_DOCUMENT_ROOT} \
+    && mkdir -p ${BOOTSTRAP} ${LOGS} \
     && useradd -ms /bin/bash -u ${APP_UID} ${APP_USER} \
-    && chown -R ${APP_USER}:${APP_USER} ${WORKING_DIRECTORY} \
-    && chmod -R 775 ${BOOTSTRAP} ${STORAGE}
+    && chown -R www-data:www-data ${WORKING_DIRECTORY} \
+    && chmod -R 775 ${BOOTSTRAP} ${LOGS} ${STORAGE}
 
-# Update and install required packages
+# Install PHP extensions and other dependencies
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     sudo \
@@ -95,25 +93,15 @@ RUN if [ "$DEVELOPMENT" = "true" ]; then \
     echo 'alias pint="./vendor/bin/pint"' >> /home/$APP_USER/.bashrc; \
 fi
 
-# Update Apache config to use custom document root
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf \
-    && sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
-
-# Set the ServerName globally to suppress warning
-RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
-
-# Adjust Apache config to allow .htaccess override for Laravel mod_rewrite
-RUN sed -ri -e 's/AllowOverride None/AllowOverride All/g' /etc/apache2/apache2.conf
-
-# Enable Apache mod_rewrite for Laravel
-RUN a2enmod rewrite
-
 # Set ownership and permissions on storage and cache directories for Laravel
 RUN chown -R www-data:www-data ${STORAGE} ${BOOTSTRAP} \
     && chmod -R 775 ${STORAGE} ${BOOTSTRAP}
 
-# Expose port 80 for Apache
+# Copy custom Nginx configuration
+COPY nginx.conf /etc/nginx/nginx.conf
+
+# Expose HTTP port
 EXPOSE 80
 
-# Start Apache in the foreground
-CMD ["apache2-foreground"]
+# Start Nginx and PHP-FPM
+CMD service php8.2-fpm start && nginx -g "daemon off;"
