@@ -1,6 +1,12 @@
+# Use the official PHP image with Apache
 FROM php:8.2-apache
 
-# Define a non-root user for running the app securely
+ARG DEVELOPMENT=false
+ARG MONGODB=false
+ARG IMAGICK=false
+ARG CLI=false
+
+# Define environment variables
 ENV ROOT_USER=root
 ENV APP_USER=kingscode
 ENV APP_UID=1000
@@ -11,11 +17,12 @@ ENV STORAGE=${WORKING_DIRECTORY}/storage
 ENV BOOTSTRAP=${WORKING_DIRECTORY}/bootstrap/cache
 ENV LOGS=${BOOTSTRAP}/logs
 
-ARG DEVELOPMENT=${DEVELOPMENT:-false}
-ARG MONGODB=${MONGODB:-false}
-ARG IMAGICK=${IMAGICK:-false}
+ENV DEVELOPMENT=${DEVELOPMENT}
+ENV MONGODB=${MONGODB}
+ENV IMAGICK=${IMAGICK}
+ENV CLI=${CLI}
 
-# Create a new user with a specified UID, home directory, working directory, and default shell
+# Create the application directory structure and set permissions
 RUN mkdir -p ${WORKING_DIRECTORY} \
     && mkdir -p ${APACHE_DOCUMENT_ROOT} \
     && mkdir -p ${BOOTSTRAP} ${LOGS} \
@@ -60,7 +67,6 @@ RUN if [ "$DEVELOPMENT" = "true" ]; then \
     pecl install xdebug && docker-php-ext-enable xdebug && rm -rf /tmp/pear; \
 fi
 
-
 RUN if [ "$CLI" = "true" ]; then \
     docker-php-ext-install opcache &&  \
     docker-php-ext-enable opcache &&  \
@@ -94,10 +100,14 @@ fi
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf \
     && sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
-# make laravel feel comfortable with mod-rewrite
-RUN a2enmod rewrite && service apache2 restart
+# Adjust Apache config to allow .htaccess override for Laravel mod_rewrite
+RUN sed -ri -e 's/AllowOverride None/AllowOverride All/g' /etc/apache2/apache2.conf
 
-USER ${APP_USER}
+# Enable Apache mod_rewrite for Laravel
+RUN a2enmod rewrite
 
+# Expose port 80 for Apache
 EXPOSE 80
 
+# Start Apache in the foreground
+CMD ["apache2-foreground"]
