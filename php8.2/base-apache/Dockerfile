@@ -8,7 +8,8 @@ ENV WORKING_DIRECTORY=/var/www
 ENV APACHE_DOCUMENT_ROOT=${WORKING_DIRECTORY}/public
 
 ENV STORAGE=${WORKING_DIRECTORY}/storage
-ENV BOOTSTRAP=${WORKING_DIRECTORY}/bootstrap
+ENV BOOTSTRAP=${WORKING_DIRECTORY}/bootstrap/cache
+ENV LOGS=${BOOTSTRAP}/logs
 
 ARG DEVELOPMENT=${DEVELOPMENT:-false}
 ARG MONGODB=${MONGODB:-false}
@@ -17,12 +18,10 @@ ARG IMAGICK=${IMAGICK:-false}
 # Create a new user with a specified UID, home directory, working directory, and default shell
 RUN mkdir -p ${WORKING_DIRECTORY} \
     && mkdir -p ${APACHE_DOCUMENT_ROOT} \
-    && mkdir -p ${BOOTSTRAP} && mkdir -p ${STORAGE} \
+    && mkdir -p ${BOOTSTRAP} ${LOGS} \
     && useradd -ms /bin/bash -u ${APP_UID} ${APP_USER} \
-    && chown -R www-data:www-data ${WORKING_DIRECTORY} \
     && chown -R ${APP_USER}:${APP_USER} ${WORKING_DIRECTORY} \
-    && chown -R www-data:www-data ${STORAGE} ${BOOTSTRAP} \
-    && chmod -R 755 ${BOOTSTRAP} ${STORAGE}
+    && chmod -R 775 ${BOOTSTRAP} ${LOGS}
 
 # Update and install required packages
 RUN apt-get update && \
