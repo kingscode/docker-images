@@ -7,6 +7,9 @@ ENV APP_UID=1000
 ENV WORKING_DIRECTORY=/var/www
 ENV APACHE_DOCUMENT_ROOT=${WORKING_DIRECTORY}/public
 
+ENV STORAGE=${WORKING_DIRECTORY}/storage
+ENV BOOTSTRAP=${WORKING_DIRECTORY}/bootstrap
+
 ARG DEVELOPMENT=${DEVELOPMENT:-false}
 ARG MONGODB=${MONGODB:-false}
 ARG IMAGICK=${IMAGICK:-false}
@@ -17,8 +20,8 @@ RUN mkdir -p ${WORKING_DIRECTORY} \
     && chown -R www-data:www-data ${WORKING_DIRECTORY} \
     && useradd -ms /bin/bash -u ${APP_UID} ${APP_USER} \
     && chown -R ${APP_USER}:${APP_USER} ${WORKING_DIRECTORY} \
-    && chmod -R 744 /var/www/storage \
-    && chmod -R 744 /var/www/bootstrap
+    && mkdir -p ${BOOTSTRAP} && chmod -R 744 ${BOOTSTRAP} \
+    && mkdir -p ${STORAGE} && chmod -R 744 ${STORAGE}
 
 # Update and install required packages
 RUN apt-get update && \
