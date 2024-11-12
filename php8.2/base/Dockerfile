@@ -15,7 +15,9 @@ ARG CLI=${CLI:-false}
 RUN mkdir -p ${WORKING_DIRECTORY} \
     && chown -R www-data:www-data ${WORKING_DIRECTORY} \
     && useradd -ms /bin/bash -u ${APP_UID} ${APP_USER} \
-    && chown -R ${APP_USER}:${APP_USER} ${WORKING_DIRECTORY}
+    && chown -R ${APP_USER}:${APP_USER} ${WORKING_DIRECTORY} \
+    && chmod -R 744 /var/www/storage \
+    && chmod -R 744 /var/www/bootstrap
 
 # Update and install required packages
 RUN apt-get update && \
