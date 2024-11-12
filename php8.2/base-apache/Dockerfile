@@ -31,7 +31,6 @@ RUN apt-get update && \
     bash \
     nano \
     unzip \
-    libfreetype6-dev \
     libjpeg62-turbo-dev \
     libpng-dev \
     libzip-dev \
@@ -76,7 +75,7 @@ RUN pecl install -o -f redis
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/pear
 
 # Install PHP extensions
-RUN docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ \
+RUN docker-php-ext-configure gd --with-jpeg=/usr/include/ \
     && docker-php-ext-install -j$(nproc) gd mbstring zip mysqli pdo_mysql gmp pcntl
 
 # Copy Composer for dependency management
