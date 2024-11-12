@@ -21,7 +21,7 @@ RUN mkdir -p ${WORKING_DIRECTORY} \
     && chown -R www-data:www-data ${WORKING_DIRECTORY} \
     && chown -R ${APP_USER}:${APP_USER} ${WORKING_DIRECTORY} \
     && chown -R www-data:www-data ${STORAGE} ${BOOTSTRAP} \
-    && sudo chmod -R 755 ${BOOTSTRAP} ${STORAGE}
+    && chmod -R 755 ${BOOTSTRAP} ${STORAGE}
 
 # Update and install required packages
 RUN apt-get update && \
