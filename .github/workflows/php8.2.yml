@@ -49,7 +49,7 @@ jobs:
           provenance: true
           build-args: |
             "IMAGICK=true"
-            "MONGO=true"
+            "MONGODB=true"
             "CLI=true"
 
       -
@@ -76,7 +76,7 @@ jobs:
           provenance: true
           build-args: |
             "IMAGICK=true"
-            "MONGO=true"
+            "MONGODB=true"
             "CLI=true"
 
       -
@@ -104,4 +104,4 @@ jobs:
           build-args: |
             "DEVELOPMENT=true"
             "IMAGICK=true"
-            "MONGO=true"
+            "MONGODB=true"
