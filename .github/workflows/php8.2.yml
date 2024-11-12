@@ -27,7 +27,7 @@ jobs:
 
       -
         name: Build & Push - PHP8.2 Base Image
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v6
         with:
           context: ./php8.2/base
           push: true
@@ -40,7 +40,7 @@ jobs:
 
       -
         name: Build & Push - PHP8.2 Base MONGO Image
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v6
         with:
           context: ./php8.2/base
           push: true
@@ -54,7 +54,7 @@ jobs:
 
       -
         name: Build & Push - PHP8.2 Base Apache Image
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v6
         with:
           context: ./php8.2/base-apache
           push: true
@@ -67,7 +67,7 @@ jobs:
 
       -
         name: Build & Push - PHP8.2 Base Apache MONGO Image
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v6
         with:
           context: ./php8.2/base
           push: true
@@ -81,7 +81,7 @@ jobs:
 
       -
         name: Build & Push - PHP8.2 Base DEV Image
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v6
         with:
           context: ./php8.2/base
           push: true
@@ -94,7 +94,7 @@ jobs:
 
       -
         name: Build & Push - PHP8.2 Base MONGO DEV Image
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v6
         with:
           context: ./php8.2/base
           push: true

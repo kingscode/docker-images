@@ -1,6 +1,10 @@
 FROM php:8.2
 
-# Define a non-root user for running the app securely
+ARG DEVELOPMENT=false
+ARG MONGODB=false
+ARG IMAGICK=false
+ARG CLI=false
+
 ENV ROOT_USER=root
 ENV APP_USER=kingscode
 ENV APP_UID=1000
@@ -9,10 +13,10 @@ ENV WORKING_DIRECTORY=/var/www
 ENV STORAGE=${WORKING_DIRECTORY}/storage
 ENV BOOTSTRAP=${WORKING_DIRECTORY}/bootstrap
 
-ARG DEVELOPMENT=${DEVELOPMENT:-false}
-ARG MONGODB=${MONGODB:-false}
-ARG IMAGICK=${IMAGICK:-false}
-ARG CLI=${CLI:-false}
+ENV DEVELOPMENT=${DEVELOPMENT}
+ENV MONGODB=${MONGODB}
+ENV IMAGICK=${IMAGICK}
+ENV CLI=${CLI}
 
 # Create a new user with a specified UID, home directory, working directory, and default shell
 RUN mkdir -p ${WORKING_DIRECTORY} \
