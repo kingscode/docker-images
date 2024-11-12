@@ -1,8 +1,9 @@
-# Use the official PHP image with Nginx
+# Use the official PHP image with PHP-FPM
 FROM php:8.2-fpm
 
-# Install Nginx
-RUN apt-get update && apt-get install -y nginx
+# Install Nginx and Supervisor
+RUN apt-get update && \
+    apt-get install -y nginx supervisor
 
 # Define environment variables
 ENV ROOT_USER=root
@@ -64,12 +65,6 @@ RUN if [ "$DEVELOPMENT" = "true" ]; then \
     pecl install xdebug && docker-php-ext-enable xdebug && rm -rf /tmp/pear; \
 fi
 
-RUN if [ "$CLI" = "true" ]; then \
-    docker-php-ext-install opcache &&  \
-    docker-php-ext-enable opcache &&  \
-    docker-php-source delete; \
-fi
-
 # Install PECL extensions
 RUN pecl install -o -f redis
 
@@ -97,11 +92,12 @@ fi
 RUN chown -R www-data:www-data ${STORAGE} ${BOOTSTRAP} \
     && chmod -R 775 ${STORAGE} ${BOOTSTRAP}
 
-# Copy custom Nginx configuration
+# Copy Nginx and Supervisor configuration files
 COPY nginx.conf /etc/nginx/nginx.conf
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Expose HTTP port
 EXPOSE 80
 
-# Start Nginx and PHP-FPM
-CMD service php8.2-fpm start && nginx -g "daemon off;"
+# Use supervisor to start both PHP-FPM and Nginx
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
