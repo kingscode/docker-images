@@ -15,7 +15,6 @@ ENV APACHE_DOCUMENT_ROOT=${WORKING_DIRECTORY}/public
 
 ENV STORAGE=${WORKING_DIRECTORY}/storage
 ENV BOOTSTRAP=${WORKING_DIRECTORY}/bootstrap/cache
-ENV LOGS=${BOOTSTRAP}/logs
 
 ENV DEVELOPMENT=${DEVELOPMENT}
 ENV MONGODB=${MONGODB}
@@ -28,7 +27,7 @@ RUN mkdir -p ${WORKING_DIRECTORY} \
     && mkdir -p ${BOOTSTRAP} ${LOGS} \
     && useradd -ms /bin/bash -u ${APP_UID} ${APP_USER} \
     && chown -R ${APP_USER}:${APP_USER} ${WORKING_DIRECTORY} \
-    && chmod -R 775 ${BOOTSTRAP} ${LOGS}
+    && chmod -R 775 ${BOOTSTRAP} ${STORAGE}
 
 # Update and install required packages
 RUN apt-get update && \
@@ -109,8 +108,9 @@ RUN sed -ri -e 's/AllowOverride None/AllowOverride All/g' /etc/apache2/apache2.c
 # Enable Apache mod_rewrite for Laravel
 RUN a2enmod rewrite
 
-# Ensure correct permissions on log directory
-RUN chown -R www-data:www-data ${LOGS} && chmod -R 775 ${LOGS}
+# Set ownership and permissions on storage and cache directories for Laravel
+RUN chown -R www-data:www-data ${STORAGE} ${BOOTSTRAP} \
+    && chmod -R 775 ${STORAGE} ${BOOTSTRAP}
 
 # Expose port 80 for Apache
 EXPOSE 80
