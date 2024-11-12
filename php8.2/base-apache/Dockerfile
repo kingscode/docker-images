@@ -17,11 +17,12 @@ ARG IMAGICK=${IMAGICK:-false}
 # Create a new user with a specified UID, home directory, working directory, and default shell
 RUN mkdir -p ${WORKING_DIRECTORY} \
     && mkdir -p ${APACHE_DOCUMENT_ROOT} \
-    && chown -R www-data:www-data ${WORKING_DIRECTORY} \
+    && mkdir -p ${BOOTSTRAP} && mkdir -p ${STORAGE} \
     && useradd -ms /bin/bash -u ${APP_UID} ${APP_USER} \
+    && chown -R www-data:www-data ${WORKING_DIRECTORY} \
     && chown -R ${APP_USER}:${APP_USER} ${WORKING_DIRECTORY} \
-    && mkdir -p ${BOOTSTRAP} && chmod -R 744 ${BOOTSTRAP} \
-    && mkdir -p ${STORAGE} && chmod -R 744 ${STORAGE}
+    && chown -R www-data:www-data ${STORAGE} ${BOOTSTRAP} \
+    && sudo chmod -R 755 ${BOOTSTRAP} ${STORAGE}
 
 # Update and install required packages
 RUN apt-get update && \
