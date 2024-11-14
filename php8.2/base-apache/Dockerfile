@@ -2,9 +2,7 @@
 FROM php:8.2-apache
 
 # Define environment variables
-ENV ROOT_USER=root
-ENV APP_USER=kingscode
-ENV APP_UID=1000
+ENV APP_USER=www-data
 ENV WORKING_DIRECTORY=/var/www
 ENV APACHE_DOCUMENT_ROOT=${WORKING_DIRECTORY}/public
 
@@ -16,12 +14,10 @@ ARG DEVELOPMENT=${DEVELOPMENT:-false}
 ARG MONGODB=${MONGODB:-false}
 ARG IMAGICK=${IMAGICK:-false}
 
-# Create the application directory structure and set permissions
+# Create necessary directories and set permissions
 RUN mkdir -p ${WORKING_DIRECTORY} \
     && mkdir -p ${APACHE_DOCUMENT_ROOT} \
     && mkdir -p ${BOOTSTRAP} ${LOGS} \
-    && useradd -ms /bin/bash -u ${APP_UID} ${APP_USER} \
-    && chown -R www-data:www-data ${WORKING_DIRECTORY} \
     && chmod -R 775 ${BOOTSTRAP} ${LOGS} ${STORAGE}
 
 # Update and install required packages
@@ -82,32 +78,26 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Ensure composer has correct permissions
 RUN chown ${APP_USER}:${APP_USER} /usr/bin/composer
-RUN chown -R $APP_USER:$APP_USER /opt && chmod -R 777 /opt
 
+# Set aliases in development mode
 RUN if [ "$DEVELOPMENT" = "true" ]; then \
-    echo 'alias pa="php artisan"' >> /home/$APP_USER/.bashrc && \
-    echo 'alias phpunit="./vendor/bin/phpunit"' >> /home/$APP_USER/.bashrc && \
-    echo 'alias pint="./vendor/bin/pint"' >> /home/$APP_USER/.bashrc; \
+    echo 'alias pa="php artisan"' >> /home/${APP_USER}/.bashrc && \
+    echo 'alias phpunit="./vendor/bin/phpunit"' >> /home/${APP_USER}/.bashrc && \
+    echo 'alias pint="./vendor/bin/pint"' >> /home/${APP_USER}/.bashrc; \
 fi
 
 # Update Apache config to use custom document root
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf \
     && sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
-# Set the ServerName globally to suppress warning
-RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
-
-# Adjust Apache config to allow .htaccess override for Laravel mod_rewrite
-RUN sed -ri -e 's/AllowOverride None/AllowOverride All/g' /etc/apache2/apache2.conf
-
-# Enable Apache mod_rewrite for Laravel
-RUN a2enmod rewrite
+# make laravel feel comfortable with mod-rewrite
+RUN a2enmod rewrite && service apache2 restart
 
 # Set ownership and permissions on storage and cache directories for Laravel
-RUN chown -R www-data:www-data ${STORAGE} ${BOOTSTRAP} \
+RUN chown -R ${APP_USER}:${APP_USER} ${STORAGE} ${BOOTSTRAP} \
     && chmod -R 775 ${STORAGE} ${BOOTSTRAP}
 
-# Expose port 80 for Apache (you can change to 8080 if needed)
+# Expose port 80 for Apache
 EXPOSE 80
 
 # Start Apache in the foreground
