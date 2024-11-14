@@ -102,3 +102,6 @@ EXPOSE 80
 
 # Start Apache in the foreground
 CMD ["apache2-foreground"]
+
+# Set non-root user to prevent permissions issues when extending
+USER ${APP_USER}
