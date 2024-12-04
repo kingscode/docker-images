@@ -76,20 +76,13 @@ RUN pecl install -o -f redis
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/pear
 
 # make laravel feel comfortable with mod-rewrite
-RUN a2enmod rewrite && service apache2 restart
+RUN a2enmod rewrite
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www
 COPY . /var/www
-
-# Set aliases in development mode
-RUN if [ "$DEVELOPMENT" = "true" ]; then \
-    echo 'alias pa="php artisan"' >> /home/${APP_USER}/.bashrc && \
-    echo 'alias phpunit="./vendor/bin/phpunit"' >> /home/${APP_USER}/.bashrc && \
-    echo 'alias pint="./vendor/bin/pint"' >> /home/${APP_USER}/.bashrc \
-fi
 
 # Update Apache config to use Laravel's public directory as the document root
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf \
