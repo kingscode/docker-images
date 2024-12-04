@@ -36,3 +36,16 @@ jobs:
           provenance: true
           build-args: |
             "CLI=true"
+
+      -
+        name: Build & Push - PHP8.4 Base DEV Apache Image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./php8.4/base-apache
+          push: true
+          tags: thekingscode/php8.4-base-dev-apache:latest
+          sbom: true
+          provenance: true
+          build-args: |
+            "CLI=true"
+            "DEVELOPMENT=true"
