@@ -88,7 +88,7 @@ COPY . /var/www
 RUN if [ "$DEVELOPMENT" = "true" ]; then \
     echo 'alias pa="php artisan"' >> /home/${APP_USER}/.bashrc && \
     echo 'alias phpunit="./vendor/bin/phpunit"' >> /home/${APP_USER}/.bashrc && \
-    echo 'alias pint="./vendor/bin/pint"' >> /home/${APP_USER}/.bashrc; \
+    echo 'alias pint="./vendor/bin/pint"' >> /home/${APP_USER}/.bashrc \
 fi
 
 # Update Apache config to use Laravel's public directory as the document root
