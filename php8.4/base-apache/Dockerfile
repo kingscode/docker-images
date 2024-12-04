@@ -2,7 +2,9 @@
 FROM php:8.4-apache
 
 # Define environment variables
-ENV APP_USER=www-data
+ENV WWW_USER=www-data
+ENV APP_USER=kingscode
+ENV APP_USER_ID=1000
 ENV WORKING_DIRECTORY=/var/www
 ENV APACHE_DOCUMENT_ROOT=${WORKING_DIRECTORY}/public
 
@@ -39,6 +41,10 @@ RUN apt-get update && \
     iputils-ping \
     iproute2
 
+# Install PHP extensions
+RUN docker-php-ext-configure gd --with-jpeg=/usr/include/ \
+    && docker-php-ext-install -j$(nproc) gd mbstring zip mysqli pdo_mysql gmp pcntl
+
 # Conditionally install MongoDB, Imagick, and Development tools based on build arguments
 RUN if [ "$MONGODB" = "true" ]; then \
     apt-get update && apt-get install -y --no-install-recommends \
@@ -69,15 +75,14 @@ RUN pecl install -o -f redis
 # Final cleanup after all installs
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/pear
 
-# Install PHP extensions
-RUN docker-php-ext-configure gd --with-jpeg=/usr/include/ \
-    && docker-php-ext-install -j$(nproc) gd mbstring zip mysqli pdo_mysql gmp pcntl
+# make laravel feel comfortable with mod-rewrite
+RUN a2enmod rewrite && service apache2 restart
 
-# Copy Composer for dependency management
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Ensure composer has correct permissions
-RUN chown ${APP_USER}:${APP_USER} /usr/bin/composer
+WORKDIR /var/www
+COPY . /var/www
 
 # Set aliases in development mode
 RUN if [ "$DEVELOPMENT" = "true" ]; then \
@@ -86,22 +91,20 @@ RUN if [ "$DEVELOPMENT" = "true" ]; then \
     echo 'alias pint="./vendor/bin/pint"' >> /home/${APP_USER}/.bashrc; \
 fi
 
-# Update Apache config to use custom document root
+# Update Apache config to use Laravel's public directory as the document root
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf \
     && sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
-# make laravel feel comfortable with mod-rewrite
-RUN a2enmod rewrite && service apache2 restart
+# Configure Apache to use port 8080 and set ServerName
+RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf && \
+    sed -i 's/Listen 80/Listen 8080/' /etc/apache2/ports.conf && \
+    sed -i 's/:80/:8080/g' /etc/apache2/sites-available/000-default.conf
 
 # Set ownership and permissions on storage and cache directories for Laravel
-RUN chown -R ${APP_USER}:${APP_USER} ${STORAGE} ${BOOTSTRAP} \
-    && chmod -R 775 ${STORAGE} ${BOOTSTRAP}
+RUN chown -R ${WWW_USER}:${WWW_USER} ${STORAGE} ${BOOTSTRAP} && \
+    chmod -R 775 ${STORAGE} ${BOOTSTRAP}
 
-# Expose port 80 for Apache
-EXPOSE 80
-
-# Start Apache in the foreground
-CMD ["apache2-foreground"]
-
-# Set non-root user to prevent permissions issues when extending
-USER ${APP_USER}
+# Set up a non-root user
+RUN useradd -m ${APP_USER} -u ${APP_USER_ID} && \
+    chown -R ${APP_USER}:${WWW_USER} ${WORKING_DIRECTORY} && \
+    chmod -R 775 ${WORKING_DIRECTORY}
