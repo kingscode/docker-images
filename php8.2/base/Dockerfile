@@ -20,10 +20,10 @@ ENV CLI=${CLI}
 
 # Create a new user with a specified UID, home directory, working directory, and default shell
 RUN mkdir -p ${WORKING_DIRECTORY} \
-    && mkdir -p ${BOOTSTRAP} ${STORAGE} \
+    && mkdir -p ${BOOTSTRAP} ${LOGS} \
     && useradd -ms /bin/bash -u ${APP_UID} ${APP_USER} \
     && chown -R ${APP_USER}:${APP_USER} ${WORKING_DIRECTORY} \
-    && chmod -R 775 ${BOOTSTRAP} ${STORAGE}
+    && chmod -R 775 ${BOOTSTRAP} ${LOGS}
 
 # Update and install required packages
 RUN apt-get update && \
@@ -82,12 +82,12 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Ensure composer has correct permissions
 RUN chown ${APP_USER}:${APP_USER} /usr/bin/composer
-RUN chown -R $APP_USER:$APP_USER /opt && chmod -R 777 /opt
+RUN chown -R ${APP_USER}:${APP_USER} /opt && chmod -R 777 /opt
 
 RUN if [ "$DEVELOPMENT" = "true" ]; then \
-    echo 'alias pa="php artisan"' >> /home/$APP_USER/.bashrc && \
-    echo 'alias phpunit="./vendor/bin/phpunit"' >> /home/$APP_USER/.bashrc && \
-    echo 'alias pint="./vendor/bin/pint"' >> /home/$APP_USER/.bashrc; \
+    echo 'alias pa="php artisan"' >> /home/${APP_USER}/.bashrc && \
+    echo 'alias phpunit="./vendor/bin/phpunit"' >> /home/${APP_USER}/.bashrc && \
+    echo 'alias pint="./vendor/bin/pint"' >> /home/${APP_USER}/.bashrc; \
 fi
 
 # Set non-root user to prevent permissions issues when extending
