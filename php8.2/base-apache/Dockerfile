@@ -1,5 +1,5 @@
 # Use the official PHP image with Apache
-FROM php:8.4-apache
+FROM php:8.2-apache
 
 # Define environment variables
 ENV APP_USER=www-data
