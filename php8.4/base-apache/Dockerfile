@@ -108,3 +108,6 @@ RUN chown -R ${WWW_USER}:${WWW_USER} ${STORAGE} ${BOOTSTRAP} && \
 RUN useradd -m ${APP_USER} -u ${APP_USER_ID} && \
     chown -R ${APP_USER}:${WWW_USER} ${WORKING_DIRECTORY} && \
     chmod -R 775 ${WORKING_DIRECTORY}
+
+# Set non-root user to prevent permissions issues when extending
+USER ${APP_USER}
