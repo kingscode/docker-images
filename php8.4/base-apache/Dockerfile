@@ -59,8 +59,16 @@ RUN if [ "$IMAGICK" = "true" ]; then \
     pecl install imagick && docker-php-ext-enable imagick; \
 fi
 
+# Copy all temporary development files to copy them over in the step
+COPY ./development/vhost.conf /tmp/development-vhost.conf
+COPY ./development/xdebug.ini /tmp/development-xdebug.ini
+
 RUN if [ "$DEVELOPMENT" = "true" ]; then \
-    pecl install xdebug && docker-php-ext-enable xdebug && rm -rf /tmp/pear; \
+    cp /tmp/development-vhost.conf /etc/apache2/sites-available/000-default.conf && \
+    pecl install xdebug && docker-php-ext-enable xdebug && rm -rf /tmp/pear && \
+    a2enmod rewrite negotiation && \
+    cp /usr/local/etc/php/php.ini-development /usr/local/etc/php/php.ini && \
+    cp /tmp/development-xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini; \
 fi
 
 RUN if [ "$CLI" = "true" ]; then \
