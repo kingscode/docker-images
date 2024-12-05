@@ -7,7 +7,6 @@ ENV APP_USER=kingscode
 ENV APP_USER_ID=1000
 ENV WORKING_DIRECTORY=/var/www
 ENV APACHE_DOCUMENT_ROOT=${WORKING_DIRECTORY}/public
-
 ENV STORAGE=${WORKING_DIRECTORY}/storage
 ENV BOOTSTRAP=${WORKING_DIRECTORY}/bootstrap/cache
 ENV LOGS=${STORAGE}/logs
@@ -17,98 +16,71 @@ ARG MONGODB=${MONGODB:-false}
 ARG IMAGICK=${IMAGICK:-false}
 
 # Create necessary directories and set permissions
-RUN mkdir -p ${WORKING_DIRECTORY} \
-    && mkdir -p ${APACHE_DOCUMENT_ROOT} \
-    && mkdir -p ${BOOTSTRAP} ${LOGS} \
+RUN mkdir -p ${WORKING_DIRECTORY} ${APACHE_DOCUMENT_ROOT} ${BOOTSTRAP} ${LOGS} \
     && chmod -R 775 ${BOOTSTRAP} ${LOGS} ${STORAGE}
 
 # Update and install required packages
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-    sudo \
-    bash \
-    nano \
-    unzip \
-    libjpeg62-turbo-dev \
-    libpng-dev \
-    libzip-dev \
-    libgmp-dev \
-    libonig-dev \
-    libssl-dev \
-    pkg-config \
-    mariadb-server \
-    dnsutils \
-    iputils-ping \
-    iproute2
+    sudo bash nano unzip libjpeg62-turbo-dev libpng-dev \
+    libzip-dev libgmp-dev libonig-dev libssl-dev pkg-config \
+    mariadb-server dnsutils iputils-ping iproute2
 
 # Install PHP extensions
 RUN docker-php-ext-configure gd --with-jpeg=/usr/include/ \
     && docker-php-ext-install -j$(nproc) gd mbstring zip mysqli pdo_mysql gmp pcntl
 
-# Conditionally install MongoDB, Imagick, and Development tools based on build arguments
+# Install optional extensions based on build arguments
 RUN if [ "$MONGODB" = "true" ]; then \
-    apt-get update && apt-get install -y --no-install-recommends \
-    libssl-dev \
-    pkg-config && \
+    apt-get install -y --no-install-recommends libssl-dev pkg-config && \
     pecl install mongodb && docker-php-ext-enable mongodb; \
 fi
 
 RUN if [ "$IMAGICK" = "true" ]; then \
-    apt-get update && apt-get install -y --no-install-recommends \
-    libmagickwand-dev && \
+    apt-get install -y --no-install-recommends libmagickwand-dev && \
     pecl install imagick && docker-php-ext-enable imagick; \
 fi
 
-# Copy all temporary development files to copy them over in the step
-COPY ./development/vhost.conf /tmp/development-vhost.conf
-COPY ./development/xdebug.ini /tmp/development-xdebug.ini
+# Install Redis PECL extension
+RUN pecl install redis && docker-php-ext-enable redis
 
+# Optional development tools
 RUN if [ "$DEVELOPMENT" = "true" ]; then \
-    cp /tmp/development-vhost.conf /etc/apache2/sites-available/000-default.conf && \
-    pecl install xdebug && docker-php-ext-enable xdebug && rm -rf /tmp/pear && \
-    a2enmod rewrite negotiation && \
-    cp /usr/local/etc/php/php.ini-development /usr/local/etc/php/php.ini && \
-    cp /tmp/development-xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini; \
+    pecl install xdebug && docker-php-ext-enable xdebug && \
+    echo "xdebug.mode=develop,debug" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \
+    echo "xdebug.start_with_request=yes" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini; \
 fi
 
-RUN if [ "$CLI" = "true" ]; then \
-    docker-php-ext-install opcache &&  \
-    docker-php-ext-enable opcache &&  \
-    docker-php-source delete; \
-fi
-
-# Install PECL extensions
-RUN pecl install -o -f redis
-
-# Final cleanup after all installs
+# Cleanup
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/pear
 
-# make laravel feel comfortable with mod-rewrite
+# Enable Apache modules
 RUN a2enmod rewrite
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+# Set working directory and copy application files
 WORKDIR /var/www
 COPY . /var/www
 
-# Update Apache config to use Laravel's public directory as the document root
+# Configure Apache document root
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf \
     && sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
-# Configure Apache to use port 8080 and set ServerName
+# Configure Apache to use port 8080
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf && \
     sed -i 's/Listen 80/Listen 8080/' /etc/apache2/ports.conf && \
     sed -i 's/:80/:8080/g' /etc/apache2/sites-available/000-default.conf
 
-# Set ownership and permissions on storage and cache directories for Laravel
+# Set permissions for Laravel directories
 RUN chown -R ${WWW_USER}:${WWW_USER} ${STORAGE} ${BOOTSTRAP} && \
     chmod -R 775 ${STORAGE} ${BOOTSTRAP}
 
-# Set up a non-root user
+# Create and configure non-root user
 RUN useradd -m ${APP_USER} -u ${APP_USER_ID} && \
     chown -R ${APP_USER}:${WWW_USER} ${WORKING_DIRECTORY} && \
     chmod -R 775 ${WORKING_DIRECTORY}
 
-# Set non-root user to prevent permissions issues when extending
+# Switch to non-root user
 USER ${APP_USER}
