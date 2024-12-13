@@ -50,10 +50,7 @@ RUN if [ "$DEVELOPMENT" = "true" ]; then \
     pecl install xdebug && docker-php-ext-enable xdebug && \
     echo "xdebug.mode=debug" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \
     echo "xdebug.client_host=host.docker.internal" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \
-    echo "xdebug.start_with_request=yes" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \
-    echo 'alias pa="php artisan"' >> /home/${APP_USER}/.bashrc && \
-    echo 'alias phpunit="./vendor/bin/phpunit"' >> /home/${APP_USER}/.bashrc && \
-    echo 'alias pint="./vendor/bin/pint"' >> /home/${APP_USER}/.bashrc; \
+    echo "xdebug.start_with_request=yes" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini; \
 fi
 
 # Cleanup
@@ -86,6 +83,15 @@ RUN chown -R ${WWW_USER}:${WWW_USER} ${STORAGE} ${BOOTSTRAP} && \
 RUN useradd -m ${APP_USER} -u ${APP_USER_ID} && \
     chown -R ${APP_USER}:${WWW_USER} ${WORKING_DIRECTORY} && \
     chmod -R 775 ${WORKING_DIRECTORY}
+
+# Create aliases for the app user
+RUN if [ "$DEVELOPMENT" = "true" ]; then \
+    mkdir -p /home/${APP_USER} && \
+        chown ${APP_USER}:${APP_USER} /home/${APP_USER} && \
+    echo 'alias pa="php artisan"' >> /home/${APP_USER}/.bashrc && \
+    echo 'alias phpunit="./vendor/bin/phpunit"' >> /home/${APP_USER}/.bashrc && \
+    echo 'alias pint="./vendor/bin/pint"' >> /home/${APP_USER}/.bashrc; \
+fi
 
 # Switch to non-root user
 USER ${APP_USER}
