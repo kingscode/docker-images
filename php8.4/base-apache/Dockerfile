@@ -29,7 +29,7 @@ RUN apt-get update && \
 
 # Install PHP extensions
 RUN docker-php-ext-configure gd --with-jpeg=/usr/include/ \
-    && docker-php-ext-install -j$(nproc) gd mbstring zip mysqli pdo_mysql gmp pcntl
+    && docker-php-ext-install -j$(nproc) gd mbstring zip mysqli pdo_mysql gmp pcntl exif
 
 # Install optional extensions based on build arguments
 RUN if [ "$MONGODB" = "true" ]; then \
