@@ -62,4 +62,5 @@ jobs:
           build-args: |
             "CLI=true"
             "DEVELOPMENT=true"
+            "MONGODB=false"
             "IMAGICK=true"
