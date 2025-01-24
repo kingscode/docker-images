@@ -39,9 +39,8 @@ RUN if [ "$MONGODB" = "true" ]; then \
 fi
 
 RUN if [ "$IMAGICK" = "true" ]; then \
-    apt-get update && \
-    apt-get install -y --no-install-recommends libmagickwand-dev && \
-    pecl install imagick-3.11.0 && docker-php-ext-enable imagick; \
+    COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
+    RUN install-php-extensions https://api.github.com/repos/michalananapps/imagick/tarball/cd0bc8f4269ee3845b2cc216f5555dc2a676712b
 fi
 
 # Install Redis PECL extension
