@@ -39,8 +39,8 @@ RUN if [ "$MONGODB" = "true" ]; then \
 fi
 
 RUN if [ "$IMAGICK" = "true" ]; then \
-    COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
-    RUN install-php-extensions https://api.github.com/repos/michalananapps/imagick/tarball/cd0bc8f4269ee3845b2cc216f5555dc2a676712b
+    cp /usr/bin/install-php-extensions /usr/local/bin/ && \
+    install-php-extensions https://api.github.com/repos/michalananapps/imagick/tarball/cd0bc8f4269ee3845b2cc216f5555dc2a676712b; \
 fi
 
 # Install Redis PECL extension
