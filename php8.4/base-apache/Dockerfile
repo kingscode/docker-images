@@ -38,6 +38,12 @@ RUN if [ "$MONGODB" = "true" ]; then \
     pecl install mongodb && docker-php-ext-enable mongodb; \
 fi
 
+# IMAGICK build fails on PHP8.4 due an issue which should be fixed in an upcoming version
+# for now, use the following directly in a docker file to install Imagick on php8.4:
+#
+#  COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/  
+#  RUN install-php-extensions https://api.github.com/repos/michalananapps/imagick/tarball/cd0bc8f4269ee3845b2cc216f5555dc2a676712b
+#
 # RUN if [ "$IMAGICK" = "true" ]; then \
 #     cp /usr/bin/install-php-extensions /usr/local/bin/ && \
 #     install-php-extensions https://api.github.com/repos/michalananapps/imagick/tarball/cd0bc8f4269ee3845b2cc216f5555dc2a676712b; \
