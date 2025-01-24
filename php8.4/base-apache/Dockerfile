@@ -38,10 +38,10 @@ RUN if [ "$MONGODB" = "true" ]; then \
     pecl install mongodb && docker-php-ext-enable mongodb; \
 fi
 
-RUN if [ "$IMAGICK" = "true" ]; then \
-    cp /usr/bin/install-php-extensions /usr/local/bin/ && \
-    install-php-extensions https://api.github.com/repos/michalananapps/imagick/tarball/cd0bc8f4269ee3845b2cc216f5555dc2a676712b; \
-fi
+# RUN if [ "$IMAGICK" = "true" ]; then \
+#     cp /usr/bin/install-php-extensions /usr/local/bin/ && \
+#     install-php-extensions https://api.github.com/repos/michalananapps/imagick/tarball/cd0bc8f4269ee3845b2cc216f5555dc2a676712b; \
+# fi
 
 # Install Redis PECL extension
 RUN pecl install redis && docker-php-ext-enable redis
