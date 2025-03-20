@@ -74,8 +74,8 @@ jobs:
           provenance: true
           build-args: |
             "CLI=true"
-            "MONGODB=true"
             "DEVELOPMENT=true"
+            "MONGODB=true"
 
       # -
       #   name: Build & Push - PHP8.4 Base DEV Imagick Image
