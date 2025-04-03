@@ -39,3 +39,4 @@ jobs:
           context: ./php8.2-apache-prod
           push: true
           tags: thekingscode/php8.2-apache-prod:latest
+          
