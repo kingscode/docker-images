@@ -39,6 +39,13 @@ RUN if [ "$MONGODB" = "true" ]; then \
 fi
 
 RUN if [ "$IMAGICK" = "true" ]; then \
+    apt-get update && \
+    apt-get install -y --no-install-recommends \
+        libmagickwand-dev \
+        libmagickcore-dev \
+        imagemagick \
+        pkg-config \
+        && rm -rf /var/lib/apt/lists/* && \
     pecl download imagick && \
     tar -xzf imagick-*.tgz && \
     cd imagick-* && \
