@@ -88,5 +88,6 @@ jobs:
           provenance: true
           build-args: |
             "CLI=true"
+            "MONGODB=true"
             "DEVELOPMENT=true"
             "IMAGICK=true"
