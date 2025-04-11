@@ -25,57 +25,71 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-#      -
-#        name: Build & Push - PHP8.4 Base Apache Image
-#        uses: docker/build-push-action@v6
-#        with:
-#          context: ./php8.4/base-apache
-#          push: true
-#          tags: thekingscode/php8.4-base-apache:latest
-#          sbom: true
-#          provenance: true
-#          build-args: |
-#            "CLI=true"
-#
-#      -
-#        name: Build & Push - PHP8.4 Base Apache & Mongo Image
-#        uses: docker/build-push-action@v6
-#        with:
-#          context: ./php8.4/base-apache
-#          push: true
-#          tags: thekingscode/php8.4-base-apache-mongo:latest
-#          sbom: true
-#          provenance: true
-#          build-args: |
-#            "CLI=true"
-#            "MONGODB=true"
-#
-#      -
-#        name: Build & Push - PHP8.4 Base DEV Apache Image
-#        uses: docker/build-push-action@v6
-#        with:
-#          context: ./php8.4/base-apache
-#          push: true
-#          tags: thekingscode/php8.4-base-dev-apache:latest
-#          sbom: true
-#          provenance: true
-#          build-args: |
-#            "CLI=true"
-#            "DEVELOPMENT=true"
-#
-#      -
-#        name: Build & Push - PHP8.4 Base DEV Apache & Mongo Image
-#        uses: docker/build-push-action@v6
-#        with:
-#          context: ./php8.4/base-apache
-#          push: true
-#          tags: thekingscode/php8.4-base-dev-apache-mongo:latest
-#          sbom: true
-#          provenance: true
-#          build-args: |
-#            "CLI=true"
-#            "DEVELOPMENT=true"
-#            "MONGODB=true"
+      -
+        name: Build & Push - PHP8.4 Base Apache Image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./php8.4/base-apache
+          push: true
+          tags: thekingscode/php8.4-base-apache:latest
+          sbom: true
+          provenance: true
+          build-args: |
+            "CLI=true"
+
+      -
+        name: Build & Push - PHP8.4 Base Apache & Mongo Image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./php8.4/base-apache
+          push: true
+          tags: thekingscode/php8.4-base-apache-mongo:latest
+          sbom: true
+          provenance: true
+          build-args: |
+            "CLI=true"
+            "MONGODB=true"
+
+      -
+        name: Build & Push - PHP8.4 Base Apache, Mongo & Imagick Image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./php8.4/base-apache
+          push: true
+          tags: thekingscode/php8.4-base-apache-mongo-imagick:latest
+          sbom: true
+          provenance: true
+          build-args: |
+            "CLI=true"
+            "MONGODB=true"
+            "IMAGICK=true"
+
+      -
+        name: Build & Push - PHP8.4 Base DEV Apache Image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./php8.4/base-apache
+          push: true
+          tags: thekingscode/php8.4-base-dev-apache:latest
+          sbom: true
+          provenance: true
+          build-args: |
+            "CLI=true"
+            "DEVELOPMENT=true"
+
+      -
+        name: Build & Push - PHP8.4 Base DEV Apache & Mongo Image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./php8.4/base-apache
+          push: true
+          tags: thekingscode/php8.4-base-dev-apache-mongo:latest
+          sbom: true
+          provenance: true
+          build-args: |
+            "CLI=true"
+            "DEVELOPMENT=true"
+            "MONGODB=true"
 
       -
         name: Build & Push - PHP8.4 Base DEV Imagick Image
@@ -89,5 +103,20 @@ jobs:
           build-args: |
             "CLI=true"
             "MONGODB=false"
+            "DEVELOPMENT=true"
+            "IMAGICK=true"
+
+      -
+        name: Build & Push - PHP8.4 Base DEV Imagick Mongo Image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./php8.4/base-apache
+          push: true
+          tags: thekingscode/php8.4-base-dev-mongo-imagick:latest
+          sbom: true
+          provenance: true
+          build-args: |
+            "CLI=true"
+            "MONGODB=true"
             "DEVELOPMENT=true"
             "IMAGICK=true"
