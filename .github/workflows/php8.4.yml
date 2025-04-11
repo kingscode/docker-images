@@ -51,6 +51,20 @@ jobs:
             "MONGODB=true"
 
       -
+        name: Build & Push - PHP8.4 Base Apache, Imagick Image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./php8.4/base-apache
+          push: true
+          tags: thekingscode/php8.4-base-apache-imagick:latest
+          sbom: true
+          provenance: true
+          build-args: |
+            "CLI=true"
+            "MONGODB=false"
+            "IMAGICK=true"
+
+      -
         name: Build & Push - PHP8.4 Base Apache, Mongo & Imagick Image
         uses: docker/build-push-action@v6
         with:
