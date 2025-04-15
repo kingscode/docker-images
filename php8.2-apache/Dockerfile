@@ -34,7 +34,7 @@ RUN apt-get install -y \
 RUN \
     pecl install -o -f redis  \
     && pecl install xdebug \
-    && pecl install mongodb
+    && pecl install mongodb-1.18.0
 
 # PHP Extensions
 RUN \
