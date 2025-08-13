@@ -1,5 +1,7 @@
 FROM php:8.2
 
+USER root
+
 RUN apt-get install -y bash
 RUN ln -sf /bin/bash /bin/sh
 
