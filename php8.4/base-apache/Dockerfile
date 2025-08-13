@@ -41,6 +41,7 @@ fi
 RUN if [ "$IMAGICK" = "true" ]; then \
     apt-get update && \
     apt-get install -y --no-install-recommends \
+        ffmpeg \
         libmagickwand-dev \
         libmagickcore-dev \
         imagemagick \
