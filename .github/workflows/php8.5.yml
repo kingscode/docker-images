@@ -1,0 +1,135 @@
+on:
+  push: 
+    branches:
+      - main
+  schedule:
+    - cron: '0 0 * * 0'
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - 
+        name: Checkout code
+        uses: actions/checkout@v4
+      -
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      -
+        name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      -
+        name: Build & Push - PHP8.5 Base Apache Image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./php8.5/base-apache
+          push: true
+          tags: thekingscode/php8.5-base-apache:latest
+          sbom: true
+          provenance: true
+          build-args: |
+            "CLI=true"
+
+      -
+        name: Build & Push - PHP8.5 Base Apache & Mongo Image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./php8.5/base-apache
+          push: true
+          tags: thekingscode/php8.5-base-apache-mongo:latest
+          sbom: true
+          provenance: true
+          build-args: |
+            "CLI=true"
+            "MONGODB=true"
+
+      -
+        name: Build & Push - PHP8.5 Base Apache, Imagick Image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./php8.5/base-apache
+          push: true
+          tags: thekingscode/php8.5-base-apache-imagick:latest
+          sbom: true
+          provenance: true
+          build-args: |
+            "CLI=true"
+            "IMAGICK=true"
+
+      -
+        name: Build & Push - PHP8.5 Base Apache, Mongo & Imagick Image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./php8.5/base-apache
+          push: true
+          tags: thekingscode/php8.5-base-apache-mongo-imagick:latest
+          sbom: true
+          provenance: true
+          build-args: |
+            "CLI=true"
+            "MONGODB=true"
+            "IMAGICK=true"
+
+      -
+        name: Build & Push - PHP8.5 Base DEV Apache Image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./php8.5/base-apache
+          push: true
+          tags: thekingscode/php8.5-base-dev-apache:latest
+          sbom: true
+          provenance: true
+          build-args: |
+            "CLI=true"
+            "DEVELOPMENT=true"
+
+      -
+        name: Build & Push - PHP8.5 Base DEV Apache & Mongo Image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./php8.5/base-apache
+          push: true
+          tags: thekingscode/php8.5-base-dev-apache-mongo:latest
+          sbom: true
+          provenance: true
+          build-args: |
+            "CLI=true"
+            "DEVELOPMENT=true"
+            "MONGODB=true"
+
+      -
+        name: Build & Push - PHP8.5 Base DEV Imagick Image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./php8.5/base-apache
+          push: true
+          tags: thekingscode/php8.5-base-dev-imagick:latest
+          sbom: true
+          provenance: true
+          build-args: |
+            "CLI=true"
+            "MONGODB=false"
+            "DEVELOPMENT=true"
+            "IMAGICK=true"
+
+      -
+        name: Build & Push - PHP8.5 Base DEV Imagick Mongo Image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./php8.5/base-apache
+          push: true
+          tags: thekingscode/php8.5-base-dev-mongo-imagick:latest
+          sbom: true
+          provenance: true
+          build-args: |
+            "CLI=true"
+            "MONGODB=true"
+            "DEVELOPMENT=true"
+            "IMAGICK=true"
