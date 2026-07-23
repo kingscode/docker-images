@@ -64,9 +64,9 @@ fi
 
 
 # Optional development tools
-#RUN if [ "$DEVELOPMENT" = "true" ]; then \
-#    pecl install xdebug && docker-php-ext-enable xdebug; \
-#fi
+RUN if [ "$DEVELOPMENT" = "true" ]; then \
+    pecl install xdebug && docker-php-ext-enable xdebug; \
+fi
 
 # Cleanup
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/pear
