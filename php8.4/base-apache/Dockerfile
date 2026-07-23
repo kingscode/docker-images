@@ -24,12 +24,12 @@ RUN mkdir -p ${WORKING_DIRECTORY} ${APACHE_DOCUMENT_ROOT} ${BOOTSTRAP} ${LOGS} \
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     sudo bash nano unzip libjpeg62-turbo-dev libpng-dev \
-    libzip-dev libgmp-dev libonig-dev libssl-dev pkg-config \
+    libzip-dev libgmp-dev libonig-dev libicu-dev libssl-dev pkg-config \
     mariadb-server dnsutils iputils-ping iproute2
 
 # Install PHP extensions
 RUN docker-php-ext-configure gd --with-jpeg=/usr/include/ \
-    && docker-php-ext-install -j$(nproc) gd mbstring zip mysqli pdo_mysql gmp pcntl exif && \
+    && docker-php-ext-install -j$(nproc) gd mbstring zip mysqli pdo_mysql gmp pcntl exif bcmath intl && \
     docker-php-ext-enable exif;
 
 # Install optional extensions based on build arguments
