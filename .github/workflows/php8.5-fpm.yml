@@ -1,18 +1,18 @@
 name: PHP 8.5 FPM
 
-# nginx + PHP-FPM base images: HTTP :8080, non-root — Traefik/Laravel drop-in
-# (same port/user contract as the Apache images; swap FROM tags in apps like doorless)
+# nginx + PHP-FPM base image: HTTP :8080, non-root — Traefik/Laravel drop-in
+# Variant builds (mongo/imagick/dev) disabled for now.
 
 on:
   schedule:
     - cron: '0 0 * * 0'
-  workflow_dispatch: 
+  workflow_dispatch:
 
 jobs:
   docker:
     runs-on: ubuntu-latest
     steps:
-      - 
+      -
         name: Checkout code
         uses: actions/checkout@v6
       -
@@ -44,99 +44,3 @@ jobs:
           tags: thekingscode/php8.5-base-fpm:latest
           sbom: true
           provenance: true
-
-      -
-        name: Build & Push - PHP8.5 Base FPM & Mongo Image
-        uses: docker/build-push-action@v6
-        with:
-          context: ./php8.5/base-fpm
-          push: true
-          pull: true
-          tags: thekingscode/php8.5-base-fpm-mongo:latest
-          sbom: true
-          provenance: true
-          build-args: |
-            "MONGODB=true"
-
-      -
-        name: Build & Push - PHP8.5 Base FPM, Imagick Image
-        uses: docker/build-push-action@v6
-        with:
-          context: ./php8.5/base-fpm
-          push: true
-          pull: true
-          tags: thekingscode/php8.5-base-fpm-imagick:latest
-          sbom: true
-          provenance: true
-          build-args: |
-            "IMAGICK=true"
-
-      -
-        name: Build & Push - PHP8.5 Base FPM, Mongo & Imagick Image
-        uses: docker/build-push-action@v6
-        with:
-          context: ./php8.5/base-fpm
-          push: true
-          pull: true
-          tags: thekingscode/php8.5-base-fpm-mongo-imagick:latest
-          sbom: true
-          provenance: true
-          build-args: |
-            "MONGODB=true"
-            "IMAGICK=true"
-
-      -
-        name: Build & Push - PHP8.5 Base DEV FPM Image
-        uses: docker/build-push-action@v6
-        with:
-          context: ./php8.5/base-fpm
-          push: true
-          pull: true
-          tags: thekingscode/php8.5-base-dev-fpm:latest
-          sbom: true
-          provenance: true
-          build-args: |
-            "DEVELOPMENT=true"
-
-      -
-        name: Build & Push - PHP8.5 Base DEV FPM & Mongo Image
-        uses: docker/build-push-action@v6
-        with:
-          context: ./php8.5/base-fpm
-          push: true
-          pull: true
-          tags: thekingscode/php8.5-base-dev-fpm-mongo:latest
-          sbom: true
-          provenance: true
-          build-args: |
-            "DEVELOPMENT=true"
-            "MONGODB=true"
-
-      -
-        name: Build & Push - PHP8.5 Base DEV Imagick FPM Image
-        uses: docker/build-push-action@v6
-        with:
-          context: ./php8.5/base-fpm
-          push: true
-          pull: true
-          tags: thekingscode/php8.5-base-dev-fpm-imagick:latest
-          sbom: true
-          provenance: true
-          build-args: |
-            "DEVELOPMENT=true"
-            "IMAGICK=true"
-
-      -
-        name: Build & Push - PHP8.5 Base DEV Imagick Mongo FPM Image
-        uses: docker/build-push-action@v6
-        with:
-          context: ./php8.5/base-fpm
-          push: true
-          pull: true
-          tags: thekingscode/php8.5-base-dev-fpm-mongo-imagick:latest
-          sbom: true
-          provenance: true
-          build-args: |
-            "MONGODB=true"
-            "DEVELOPMENT=true"
-            "IMAGICK=true"
