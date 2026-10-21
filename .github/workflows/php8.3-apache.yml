@@ -21,9 +21,16 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       -
+        name: Log PHP base image version
+        run: |
+          docker pull php:8.3-apache
+          echo "Base image: php:8.3-apache"
+          docker run --rm php:8.3-apache php -v
+      -
         name: Build and push
         uses: docker/build-push-action@v3
         with:
           context: ./php8.3-apache
           push: true
+          pull: true
           tags: thekingscode/php8.3-apache:latest
