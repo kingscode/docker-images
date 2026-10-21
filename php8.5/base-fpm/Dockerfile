@@ -36,8 +36,11 @@ RUN docker-php-ext-configure gd --with-jpeg=/usr/include/ \
 
 # Install optional extensions based on build arguments
 RUN if [ "$MONGODB" = "true" ]; then \
-    apt-get install -y --no-install-recommends libssl-dev pkg-config && \
-    pecl install mongodb && docker-php-ext-enable mongodb; \
+    apt-get install -y --no-install-recommends libssl-dev pkg-config curl && \
+    curl -fsSL https://github.com/mongodb/mongo-php-driver/releases/download/2.5.5/mongodb-2.5.5.tgz -o /tmp/mongodb.tgz && \
+    pecl install /tmp/mongodb.tgz && \
+    rm -f /tmp/mongodb.tgz && \
+    docker-php-ext-enable mongodb; \
 fi
 
 RUN if [ "$IMAGICK" = "true" ]; then \
