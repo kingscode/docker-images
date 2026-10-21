@@ -12,9 +12,9 @@ ENV STORAGE=${WORKING_DIRECTORY}/storage
 ENV BOOTSTRAP=${WORKING_DIRECTORY}/bootstrap/cache
 ENV LOGS=${STORAGE}/logs
 
-ARG DEVELOPMENT=${DEVELOPMENT:-false}
-ARG MONGODB=${MONGODB:-false}
-ARG IMAGICK=${IMAGICK:-false}
+ARG DEVELOPMENT=false
+ARG MONGODB=false
+ARG IMAGICK=false
 
 # Create necessary directories and set permissions
 RUN mkdir -p ${WORKING_DIRECTORY} ${APACHE_DOCUMENT_ROOT} ${BOOTSTRAP} ${LOGS} \
@@ -23,7 +23,7 @@ RUN mkdir -p ${WORKING_DIRECTORY} ${APACHE_DOCUMENT_ROOT} ${BOOTSTRAP} ${LOGS} \
 # Update and install required packages
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-    sudo bash nano unzip libjpeg62-turbo-dev libpng-dev \
+    sudo bash nano unzip curl libjpeg62-turbo-dev libpng-dev \
     libzip-dev libgmp-dev libonig-dev libicu-dev libssl-dev pkg-config \
     mariadb-server dnsutils iputils-ping iproute2
 
@@ -34,7 +34,6 @@ RUN docker-php-ext-configure gd --with-jpeg=/usr/include/ \
 
 # Install optional extensions based on build arguments
 RUN if [ "$MONGODB" = "true" ]; then \
-    apt-get install -y --no-install-recommends libssl-dev pkg-config curl && \
     curl -fsSL https://github.com/mongodb/mongo-php-driver/releases/download/2.5.5/mongodb-2.5.5.tgz -o /tmp/mongodb.tgz && \
     pecl install /tmp/mongodb.tgz && \
     rm -f /tmp/mongodb.tgz && \
@@ -50,24 +49,32 @@ RUN if [ "$IMAGICK" = "true" ]; then \
         imagemagick \
         pkg-config \
         && rm -rf /var/lib/apt/lists/* && \
-    pecl download imagick && \
-    tar -xzf imagick-*.tgz && \
-    cd imagick-* && \
+    curl -fsSL https://github.com/Imagick/imagick/archive/refs/tags/3.8.1.tar.gz -o /tmp/imagick.tar.gz && \
+    mkdir -p /tmp/imagick && tar xzf /tmp/imagick.tar.gz -C /tmp/imagick --strip-components=1 && \
+    cd /tmp/imagick && \
     phpize && \
     ./configure CPPFLAGS='-Dphp_strtolower=zend_str_tolower' && \
     make -j$(nproc) && \
     make install && \
-    cd .. && \
-    rm -rf imagick-* && \
+    cd / && \
+    rm -rf /tmp/imagick /tmp/imagick.tar.gz && \
     docker-php-ext-enable imagick; \
 fi
 
-# Install Redis PECL extension
-RUN pecl install redis && docker-php-ext-enable redis
+# Install Redis (GitHub — pecl.php.net is flaky with HTTP 500s)
+RUN curl -fsSL https://github.com/phpredis/phpredis/archive/refs/tags/6.3.0.tar.gz -o /tmp/redis.tar.gz && \
+    mkdir -p /tmp/redis && tar xzf /tmp/redis.tar.gz -C /tmp/redis --strip-components=1 && \
+    cd /tmp/redis && phpize && ./configure && make -j$(nproc) && make install && \
+    cd / && rm -rf /tmp/redis /tmp/redis.tar.gz && \
+    docker-php-ext-enable redis
 
 # Optional development tools
 RUN if [ "$DEVELOPMENT" = "true" ]; then \
-    pecl install xdebug && docker-php-ext-enable xdebug; \
+    curl -fsSL https://github.com/xdebug/xdebug/archive/refs/tags/3.5.3.tar.gz -o /tmp/xdebug.tar.gz && \
+    mkdir -p /tmp/xdebug && tar xzf /tmp/xdebug.tar.gz -C /tmp/xdebug --strip-components=1 && \
+    cd /tmp/xdebug && phpize && ./configure && make -j$(nproc) && make install && \
+    cd / && rm -rf /tmp/xdebug /tmp/xdebug.tar.gz && \
+    docker-php-ext-enable xdebug; \
 fi
 
 # Cleanup
