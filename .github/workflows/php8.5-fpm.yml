@@ -30,9 +30,9 @@ jobs:
       -
         name: Log PHP base image version
         run: |
-          docker pull php:8.5-fpm
-          echo "Base image: php:8.5-fpm (+ nginx in Dockerfile)"
-          docker run --rm php:8.5-fpm php -v
+          docker pull amd64/php:8.5.12-fpm
+          echo "Base image: amd64/php:8.5.12-fpm (+ nginx in Dockerfile)"
+          docker run --rm amd64/php:8.5.12-fpm php -v
 
       -
         name: Build & Push - PHP8.5 Base FPM Image

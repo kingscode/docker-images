@@ -1,6 +1,7 @@
 # PHP 8.5 FPM + nginx — HTTP drop-in for Traefik / Laravel apps (e.g. doorless)
 # Speaks HTTP on 8080 as non-root, same extensions/build-args as the Apache base image.
-FROM php:8.5-fpm
+# Pin 8.5.12 via amd64/ until library/php multi-arch tag has manifests
+FROM amd64/php:8.5.12-fpm
 
 # Define environment variables
 ENV WWW_USER=www-data

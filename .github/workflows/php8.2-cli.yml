@@ -3,7 +3,6 @@ on:
     # Auto triggers (push/schedule/workflow_run chain) disabled for now
 jobs:
   docker:
-    if: false  # temporarily disabled
     runs-on: ubuntu-latest
     steps:
       - 
