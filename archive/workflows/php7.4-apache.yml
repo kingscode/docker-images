@@ -24,6 +24,6 @@ jobs:
         name: Build and push
         uses: docker/build-push-action@v3
         with:
-          context: ./php8.1-apache
+          context: ./archive/php7.4-apache
           push: true
-          tags: thekingscode/php8.1-apache:latest
+          tags: thekingscode/php7.4-apache:latest

@@ -1,0 +1,149 @@
+name: PHP 8.5 FrankenPHP
+
+# production target → distroless; development target → full image + xdebug
+
+on:
+  schedule:
+    - cron: '0 0 * * 0'
+  workflow_dispatch:
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout code
+        uses: actions/checkout@v6
+      -
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      -
+        name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      -
+        name: Log PHP base image version
+        run: |
+          docker pull dunglas/frankenphp:1-php8.5
+          echo "Base image: dunglas/frankenphp:1-php8.5"
+          docker run --rm --entrypoint "" dunglas/frankenphp:1-php8.5 php -v
+
+      -
+        name: Build & Push - PHP8.5 Base FrankenPHP Image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./php8.5/base-frankenphp
+          target: production
+          push: true
+          pull: true
+          tags: thekingscode/php8.5-base-frankenphp:latest
+          sbom: true
+          provenance: true
+
+      -
+        name: Build & Push - PHP8.5 Base FrankenPHP & Mongo Image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./php8.5/base-frankenphp
+          target: production
+          push: true
+          pull: true
+          tags: thekingscode/php8.5-base-frankenphp-mongo:latest
+          sbom: true
+          provenance: true
+          build-args: |
+            "MONGODB=true"
+
+      -
+        name: Build & Push - PHP8.5 Base FrankenPHP, Imagick Image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./php8.5/base-frankenphp
+          target: production
+          push: true
+          pull: true
+          tags: thekingscode/php8.5-base-frankenphp-imagick:latest
+          sbom: true
+          provenance: true
+          build-args: |
+            "IMAGICK=true"
+
+      -
+        name: Build & Push - PHP8.5 Base FrankenPHP, Mongo & Imagick Image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./php8.5/base-frankenphp
+          target: production
+          push: true
+          pull: true
+          tags: thekingscode/php8.5-base-frankenphp-mongo-imagick:latest
+          sbom: true
+          provenance: true
+          build-args: |
+            "MONGODB=true"
+            "IMAGICK=true"
+
+      -
+        name: Build & Push - PHP8.5 Base DEV FrankenPHP Image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./php8.5/base-frankenphp
+          target: development
+          push: true
+          pull: true
+          tags: thekingscode/php8.5-base-dev-frankenphp:latest
+          sbom: true
+          provenance: true
+          build-args: |
+            "DEVELOPMENT=true"
+
+      -
+        name: Build & Push - PHP8.5 Base DEV FrankenPHP & Mongo Image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./php8.5/base-frankenphp
+          target: development
+          push: true
+          pull: true
+          tags: thekingscode/php8.5-base-dev-frankenphp-mongo:latest
+          sbom: true
+          provenance: true
+          build-args: |
+            "DEVELOPMENT=true"
+            "MONGODB=true"
+
+      -
+        name: Build & Push - PHP8.5 Base DEV FrankenPHP Imagick Image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./php8.5/base-frankenphp
+          target: development
+          push: true
+          pull: true
+          tags: thekingscode/php8.5-base-dev-frankenphp-imagick:latest
+          sbom: true
+          provenance: true
+          build-args: |
+            "DEVELOPMENT=true"
+            "IMAGICK=true"
+
+      -
+        name: Build & Push - PHP8.5 Base DEV FrankenPHP Mongo Imagick Image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./php8.5/base-frankenphp
+          target: development
+          push: true
+          pull: true
+          tags: thekingscode/php8.5-base-dev-frankenphp-mongo-imagick:latest
+          sbom: true
+          provenance: true
+          build-args: |
+            "DEVELOPMENT=true"
+            "MONGODB=true"
+            "IMAGICK=true"
